@@ -1,0 +1,17 @@
+.message {
+    text-align: center;
+    }
+
+.progressbox {
+    margin-top: 4px;
+    }
+.progress {
+    width: 401px;
+    height: 2px;
+    background: #333;
+    }
+.progressbar {
+    width: 0;
+    border: 1px solid green;
+    display: none;
+    }

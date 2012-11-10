@@ -1,0 +1,164 @@
+html, body {
+    background: #222;
+    margin: 0;
+    padding: 0;
+    color: #bbb;
+    font: 12px helvetica, arial, sans-serif;
+    }
+
+html {
+    overflow-y: scroll;
+    }
+
+a, a:link, a:active, a:visited {
+    text-decoration: none;
+    color: #555;
+    }
+a.highlight {
+    color: #bbb;
+    }
+a:hover {
+    color: white;
+    }
+
+table {
+    border: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border-collapse: collapse; /* 'cellspacing' equivalent */
+    }
+table td, table th {
+    padding: 2px 0 2px 0; /* 'cellpadding' equivalent */
+    }
+
+form {
+    margin: 0;
+    padding: 0;
+    }
+input, select, button {
+    border-radius: 2px;
+    background: #353535;
+    border: 0;
+    color: #888;
+    font: 12px helvetica, arial, sans-serif;
+    }
+
+pre {
+    white-space: pre-wrap; /* css-3 */
+    white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 4px;
+    overflow: auto;
+    font: 11px monospace;
+    }
+
+.menu_visible {
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-size: 22px;
+    }
+.menu_visible a:hover {
+    color: white;
+    }
+
+.extra_menu {
+    position: fixed;
+    top: 0;
+    left: 160px;
+    right: 160px;
+    font-size: 16px;
+    z-index: 100;
+    }
+
+.list_control_left {
+    padding-left: 4px;
+    text-align: left;
+    }
+.list_control_right {
+    padding-right: 4px;
+    text-align: right;
+    }
+.list_control_center {
+    text-align: center;
+    }
+.page_control {
+    width: 100px;
+    }
+
+.extra_controls {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    font-size: 12px;
+    text-align: right;
+    }
+
+.title {
+    font-size: 16px;
+    }
+.content_color {
+    background: #272727;
+    }
+.content {
+    margin: 0 160px 0 160px;
+    }
+.content_form {
+    border-top: 3px solid #222;
+    padding: 16px;
+    margin: 0;
+    }
+.content_element {
+    margin: 3px 0 3px 0;
+    padding: 0 4px 0 4px;
+    }
+.content_element_form {
+    margin: 3px 0 3px 0;
+    padding: 16px;
+    }
+
+.list_control {
+    font-size: 16px;
+    text-align: center;
+    }
+
+.details_title {
+    width: 160px;
+    }
+
+.button {
+    width: 70px;
+    }
+.button:hover {
+    background-color: #555;
+    }
+
+.td_button {
+    width: 1px;
+    }
+.img_button {
+    height: 20px;
+    }
+
+/* the overlayed element */
+.add_overlay {
+    display: none;
+    z-index: 10000;
+    width: 100%;
+    height: auto;
+    background: transparent;
+    }
+pre#add_message {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    font: 20px sans-serif;
+    }

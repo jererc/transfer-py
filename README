@@ -1,0 +1,23 @@
+Transfer.
+
+Process transfers from a source to a destination.
+
+Handles http, ftp, sftp, rsync and torrent transfers.
+
+
+Start the daemon and webui:
+./transfer/run.py
+
+
+Examples:
+
+    # Download a torrent
+    src = 'magnet:?xt=urn:btih:bff328f4ae3f4c3d93d2510113daedc2b57c5870&dn=Homeland+S02E06+720p+HDTV+x264-IMMERSE+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Ftracker.publicbt.com%3A80&tr=udp%3A%2F%2Ftracker.istole.it%3A6969&tr=udp%3A%2F%2Ftracker.ccc.de%3A80'
+    dst = '/home/jererc/Downloads'
+    Transfer().add(src, dst)
+
+
+    # Sync hosts
+    src = 'rsync://username1:password1@host1/path/to/src/'
+    src = 'rsync://username2:password2@host2/path/to/dst/'
+    Transfer().add(src, dst)
