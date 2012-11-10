@@ -19,5 +19,5 @@ Examples:
 
     # Sync hosts
     src = 'rsync://username1:password1@host1/path/to/src/'
-    src = 'rsync://username2:password2@host2/path/to/dst/'
+    dst = 'rsync://username2:password2@host2/path/to/dst/'
     Transfer().add(src, dst)
