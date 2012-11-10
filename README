@@ -16,7 +16,12 @@ Examples:
     dst = '/home/jererc/Downloads'
     Transfer.add(src, dst)
 
-    # Sync hosts
+    # Upload a directory to a ftp server
+    src = '/home/jererc/Downloads/my_dir'
+    dst = 'ftp://user:password@host/path/to/dst'
+    Transfer.add(src, dst)
+
+    # Sync hosts directories
     src = 'rsync://username1:password1@host1/path/to/src/'
     dst = 'rsync://username2:password2@host2/path/to/dst/'
     Transfer.add(src, dst)
