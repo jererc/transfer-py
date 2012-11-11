@@ -57,7 +57,8 @@ def get_factory():
 def get_callable(type):
     try:
         module = __import__('transfer.utils.handlers', globals(), locals(), ['handlers'], -1)
-    except ImportError:
+    except ImportError, e:
+        logger.error(str(e))
         return
     cls = getattr(module, type.capitalize(), None)
     if cls:
