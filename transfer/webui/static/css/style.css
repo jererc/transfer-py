@@ -4,6 +4,7 @@ html, body {
     padding: 0;
     color: #bbb;
     font: 12px helvetica, arial, sans-serif;
+    font-weight: lighter;
     }
 
 html {
@@ -55,19 +56,15 @@ pre {
     margin: 0;
     padding: 4px;
     overflow: auto;
-    font: 11px monospace;
+    font: 11px "Lucida Console", Monaco, monospace;
     }
 
 .menu_visible {
     position: fixed;
     top: 0;
     left: 0;
-    font-size: 22px;
+    font-size: 24px;
     }
-.menu_visible a:hover {
-    color: white;
-    }
-
 .extra_menu {
     position: fixed;
     top: 0;
@@ -75,21 +72,6 @@ pre {
     right: 160px;
     font-size: 16px;
     z-index: 100;
-    }
-
-.list_control_left {
-    padding-left: 4px;
-    text-align: left;
-    }
-.list_control_right {
-    padding-right: 4px;
-    text-align: right;
-    }
-.list_control_center {
-    text-align: center;
-    }
-.page_control {
-    width: 100px;
     }
 
 .extra_controls {
@@ -100,47 +82,46 @@ pre {
     text-align: right;
     }
 
-.title {
-    font-size: 16px;
-    }
-.content_color {
-    background: #272727;
-    }
 .content {
     margin: 0 160px 0 160px;
     }
-.content_form {
-    border-top: 3px solid #222;
-    padding: 16px;
-    margin: 0;
+.content_div {
+    margin-top: 2px;
+    background: #272727;
     }
 .content_element {
-    margin: 3px 0 3px 0;
-    padding: 0 4px 0 4px;
+    position: relative;
+    padding: 8px;
     }
-.content_element_form {
-    margin: 3px 0 3px 0;
-    padding: 16px;
+.content_new {
+    background: #222;
+    padding: 8px;
     }
-
-.list_control {
-    font-size: 16px;
+.element_info, .element_edit, .element_details, .element_new {
+    display: none;
+    padding: 8px;
+    }
+.element_highlight {
+    background: #2d2d2d;
+    }
+.element_actions {
+    display: none;
+    position: absolute;
+    padding: 8px;
+    right: 4px;
+    top: 0;
+    }
+.element_new_actions {
+    padding: 8px;
     text-align: center;
     }
-
 .details_title {
     width: 160px;
+    vertical-align: top;
     }
 
-.button {
-    width: 70px;
-    }
-.button:hover {
-    background-color: #555;
-    }
-
-.td_button {
-    width: 1px;
+.title {
+    font-size: 16px;
     }
 .img_button {
     height: 20px;
@@ -154,7 +135,7 @@ pre {
     height: auto;
     background: transparent;
     }
-pre#add_message {
+.add_message {
     margin: 0;
     padding: 0;
     height: 100%;

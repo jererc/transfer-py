@@ -1,14 +1,25 @@
 #!/usr/bin/env python
+import sys
 import logging
 from logging.handlers import RotatingFileHandler
 
-from systools.system import get_package_modules
+from systools.system import popen, get_package_modules
 
 from transfer import settings, get_factory, Transfer
 
 
 WORKERS_DIR = 'workers'
+CMDS = ['mongod', 'transmission-daemon', 'rsync', 'unzip', 'unrar']
 
+
+def check_requirements():
+    res = True
+    for cmd in CMDS:
+        if popen('which %s' % cmd)[-1] != 0:
+            res = False
+            print '%s is missing' % cmd
+
+    return res
 
 def clean_aborted():
     Transfer.update({
@@ -18,6 +29,9 @@ def clean_aborted():
             {'$set': {'started': None}}, multi=True, safe=True)
 
 def main():
+    if not check_requirements():
+        sys.exit(1)
+
     clean_aborted()
 
     factory = get_factory()

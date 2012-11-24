@@ -11,101 +11,114 @@
 {% block content %}
 <div id="overlay_trigger" rel="#add_overlay"></div>
 
-<div class="content_form content_color">
-    <form>
-        <p class="title">Add a transfer</p>
-        <input type="text" name="src" size="30" value="" />
-        to <input type="text" name="dst" size="30" value="" />
-        <select title="type" name="type">
-            <option value="">auto</option>
-            <option value="torrent">torrent</option>
-        </select>
-        <button class="button" type="submit" value="add">add</button>
-    </form>
-</div>
-
 {% for item in items %}
-    <div class="content_element content_color">
+    <div class="content_div content_element">
+        <div class="element_name">
+            <input type="hidden" name="id" value="{{ item._id }}" />
 
-        <form>
-            <table class="element_name">
-                <tr>
-                    <input type="hidden" name="id" value="{{ item._id }}" />
+            <span class="transfer_type">{{ item.type }}</span>
+            <span class="name"></span>
+            <div class="progressbox">
+                <div class="progress">
+                    <div class="progressbar"></div>
+                </div>
+            </div>
+        </div>
 
-                    <td style="width: auto;">
-                        <span class="name"></span>
-                        <div class="progressbox">
-                            <div class="progress">
-                                <div class="progressbar"></div>
-                            </div>
-                        </div>
-                    </td>
+        <div class="element_actions">
+            {% if item.search_id %}
+                <a href="{{ url_for('searches', id=item.search_id) }}"><img class="img_button" src="{{ url_for('static', filename='img/info.png') }}"></img></a>
+            {% endif %}
+            <a href=""><img class="img_button" src="{{ url_for('static', filename='img/more.png') }}" alt="more"></img></a>
+            <a href=""><img class="img_button" src="{{ url_for('static', filename='img/remove.png') }}" alt="remove"></img></a>
+        </div>
 
-                    {% if item.search_id %}
-                        <td class="td_button">
-                            <a href="{{ url_for('searches', id=item.search_id) }}"><img class="img_button" src="{{ url_for('static', filename='img/info.png') }}"></img></a>
-                        </td>
-                    {% endif %}
-
-                    <td class="td_button">
-                        <a href=""><img class="img_button" src="{{ url_for('static', filename='img/more.png') }}" alt="more"></img></a>
-                    </td>
-                    <td class="td_button">
-                        <a href=""><img class="img_button" src="{{ url_for('static', filename='img/remove.png') }}" alt="remove"></img></a>
-                    </td>
-                </tr>
-            </table>
-        </form>
-
-        <div class="element_more" style="display: none;">
+        <div class="element_info">
             <table>
-                {% for key, val in [('Type', item.type), ('Created', item.created), ('Started', item.started), ('Source', item.src|truncate(80, True)), ('Destination', item.dst)] %}
+                {% for key, val in [('Created', item.created), ('Started', item.started), ('Source', item.src|truncate(80, True)), ('Destination', item.dst)] %}
                     <tr>
-                        <td class="details_title">{{ key }}:</td><td>{% if val != None %}{{ val }}{% else %}-{% endif %}</td>
+                        <td class="details_title">{{ key }}:</td>
+                        <td>{% if val != None %}{{ val }}{% else %}-{% endif %}</td>
                     </tr>
                 {% endfor %}
 
                 <tr>
-                    <td class="details_title">Transferred:</td><td><span class="transferred"></span> MB</td>
+                    <td class="details_title">Transferred:</td>
+                    <td><span class="transferred"></span> MB</td>
                 </tr>
                 <tr>
-                    <td class="details_title">Size:</td><td><span class="size"></span> MB</td>
+                    <td class="details_title">Size:</td>
+                    <td><span class="size"></span> MB</td>
                 </tr>
                 <tr>
-                    <td class="details_title">Progress:</td><td><span class="progress"></span> %</td>
+                    <td class="details_title">Progress:</td>
+                    <td><span class="progress"></span> %</td>
                 </tr>
 
                 {% for key, val in [('Hash', item.info.hash), ('Status', item.info.status), ('Last activity', item.info.date_active), ('Download directory', item.info.download_dir)] %}
                     <tr>
-                        <td class="details_title">{{ key }}:</td><td>{% if val %}{{ val }}{% else %}-{% endif %}</td>
+                        <td class="details_title">{{ key }}:</td>
+                        <td>{% if val %}{{ val }}{% else %}-{% endif %}</td>
                     </tr>
                 {% endfor %}
                 {% if item.info.transfer_rate %}
                     <tr>
-                        <td class="details_title">Download rate:</td><td>{{ (item.info.transfer_rate / 1024)|int }} KB/s</td>
+                        <td class="details_title">Download rate:</td>
+                        <td>{{ (item.info.transfer_rate / 1024)|int }} KB/s</td>
                     </tr>
                 {% endif %}
                 {% if item.info.files %}
+                    {% for file in item.info.files %}
                     <tr>
-                        <td class="details_title">Files:</td><td></td>
+                        <td class="details_title">{% if loop.first %}Files:{% endif %}</td>
+                        <td>{{ file }}</td>
                     </tr>
-                    {% for file in item.info.files|sort %}
-                        <tr>
-                            <td></td><td>{{ file }}</td>
-                        </tr>
                     {% endfor %}
                 {% endif %}
-
                 {% if item.info.error_string %}
                     <tr>
-                        <td class="details_title"><p class="title">Error:</p></td><td>{{ item.info.error_string }}</td>
+                        <td class="details_title"><p class="title">Error:</p></td>
+                        <td>{{ item.info.error_string }}</td>
                     </tr>
                 {% endif %}
-
             </table>
         </div>
 
     </div>
 {% endfor %}
 
+<div class="content_div content_new">
+    <div class="element_new">
+        <form>
+            <table>
+                <tr>
+                    <td class="details_title">Source:</td>
+                    <td><input type="text" name="src" size="40" value="" /></td>
+                </tr>
+                <tr>
+                    <td class="details_title">Destination:</td>
+                    <td><input type="text" name="dst" size="40" value="" /></td>
+                </tr>
+                <tr>
+                    <td class="details_title">Type:</td>
+                    <td>
+                        <select title="type" name="type">
+                            <option value="">auto</option>
+                            <option value="torrent">torrent</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <div class="element_new_actions">
+        <a href=""><img class="img_button" src="{{ url_for('static', filename='img/add.png') }}" alt="add"></img></a>
+    </div>
+</div>
+
+<!-- overlayed element -->
+<div id="add_overlay" class="add_overlay">
+    <pre class="add_message"></pre>
+</div>
 {% endblock %}
