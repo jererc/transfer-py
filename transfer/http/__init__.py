@@ -41,13 +41,15 @@ class HttpTransfer(object):
     def _get_remote_info(self, urls):
         info = []
         for url in urls:
-            info_ = get_url_info(url)
-            if not info_['filename']:
+            res = get_url_info(url)
+            if not res:
+                return
+            if not res['filename']:
                 logger.error('failed to get filename from %s' % url)
                 return
-            if not info_['size']:
+            if not res['size']:
                 logger.error('failed to get size from %s' % url)
-            info.append(info_)
+            info.append(res)
         return info
 
     def _download_file(self, src, dst, timeout=settings.PROCESS_TIMEOUT):
@@ -131,8 +133,9 @@ def _get_size(remote):
 def get_url_info(url):
     try:
         remote = urlopen(url)
-    except URLError:
-        remote = None
+    except URLError, e:
+        logger.error('failed to open %s: %s' % (url, str(e)))
+        return
     if remote:
         url = remote.geturl()
     filename = _get_filename(remote)

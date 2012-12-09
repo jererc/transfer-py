@@ -37,7 +37,8 @@ class Http(HttpTransfer):
         transferred += self.transferred
         self.transfer['total'] = self.total
         self.transfer['transferred'] = transferred
-        self.transfer['progress'] = transferred * 100 / float(self.transfer['total'])
+        total = float(self.transfer['total'])
+        self.transfer['progress'] = transferred * 100 / total if total else 0
         self.transfer['info']['name'] = self.name
         Transfer.save(self.transfer, safe=True)
 
