@@ -11,6 +11,36 @@
 {% block content %}
 <div id="overlay_trigger" rel="#add_overlay"></div>
 
+<div class="content_div content_new">
+    <div class="element_new">
+        <form>
+            <table>
+                <tr>
+                    <td class="details_title">Source:</td>
+                    <td><input type="text" name="src" size="40" value="" /></td>
+                </tr>
+                <tr>
+                    <td class="details_title">Destination:</td>
+                    <td><input type="text" name="dst" size="40" value="" /></td>
+                </tr>
+                <tr>
+                    <td class="details_title">Type:</td>
+                    <td>
+                        <select title="type" name="type">
+                            <option value="">auto</option>
+                            <option value="torrent">torrent</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <div class="element_new_actions">
+        <a href=""><img class="img_button" src="{{ url_for('static', filename='img/add.png') }}" alt="add"></img></a>
+    </div>
+</div>
+
 {% for item in items %}
     <div class="content_div content_element">
         <div class="element_name">
@@ -86,36 +116,6 @@
 
     </div>
 {% endfor %}
-
-<div class="content_div content_new">
-    <div class="element_new">
-        <form>
-            <table>
-                <tr>
-                    <td class="details_title">Source:</td>
-                    <td><input type="text" name="src" size="40" value="" /></td>
-                </tr>
-                <tr>
-                    <td class="details_title">Destination:</td>
-                    <td><input type="text" name="dst" size="40" value="" /></td>
-                </tr>
-                <tr>
-                    <td class="details_title">Type:</td>
-                    <td>
-                        <select title="type" name="type">
-                            <option value="">auto</option>
-                            <option value="torrent">torrent</option>
-                        </select>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
-
-    <div class="element_new_actions">
-        <a href=""><img class="img_button" src="{{ url_for('static', filename='img/add.png') }}" alt="add"></img></a>
-    </div>
-</div>
 
 <!-- overlayed element -->
 <div id="add_overlay" class="add_overlay">

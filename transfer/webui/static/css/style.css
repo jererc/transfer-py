@@ -59,29 +59,6 @@ pre {
     font: 11px "Lucida Console", Monaco, monospace;
     }
 
-.menu_visible {
-    position: fixed;
-    top: 0;
-    left: 0;
-    font-size: 24px;
-    }
-.extra_menu {
-    position: fixed;
-    top: 0;
-    left: 160px;
-    right: 160px;
-    font-size: 16px;
-    z-index: 100;
-    }
-
-.extra_controls {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    font-size: 12px;
-    text-align: right;
-    }
-
 .content {
     margin: 0 160px 0 160px;
     }
@@ -115,14 +92,14 @@ pre {
     padding: 8px;
     text-align: center;
     }
+.name {
+    font-size: 14px;
+    vertical-align: bottom;
+    }
 .details_title {
     width: 160px;
-    vertical-align: top;
     }
 
-.title {
-    font-size: 16px;
-    }
 .img_button {
     height: 20px;
     }

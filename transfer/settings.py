@@ -32,9 +32,8 @@ DB_NAME = 'transfer'
 WEBUI_PORT = 8002
 
 # Logging
+LOG_FILE = '/home/user/log/transfer.log'
 LOG_FORMAT = '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-LOG_DEFAULT = '/home/user/log/transfer.log'
-LOG_ERRORS = '/home/user/log/transfer-errors.log'
 LOG_SIZE = 100000   # Bytes
 LOG_COUNT = 100
 

@@ -15,13 +15,14 @@ function initActions() {
         $(this).find('.element_actions').hide();
         });
 
-    $('.content_new').mouseover(function() {
-        $(this).addClass('element_highlight');
-        $(this).find('.element_new').slideDown('fast');
+    $('.img_button[alt="add"]').mouseover(function() {
+        var content = $(this).parents('.content_new')[0];
+        $(content).addClass('element_highlight', 200);
+        $(content).find('.element_new').slideDown('fast');
         });
     $('.content_new').mouseleave(function() {
-        $(this).find('.element_new').slideUp('fast', function() {
-            $('.content_new').removeClass('element_highlight');
+        $(this).find('.element_new').slideUp('slow', function() {
+            $('.content_new').removeClass('element_highlight', 200);
             });
         });
 
