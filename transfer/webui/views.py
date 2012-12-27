@@ -1,3 +1,4 @@
+import re
 import logging
 
 from flask import jsonify, request, render_template
@@ -23,6 +24,8 @@ def add():
     if not src or not dst:
         return jsonify(message='missing source or destination')
 
+    if ',' in src:
+        src = re.split(r'[,\s]+', src)
     try:
         Transfer.add(src, dst, request.args.get('type'))
     except Exception, e:
@@ -31,8 +34,7 @@ def add():
 
 @app.route('/transfers/update')
 def update():
-    transfer_id = ObjectId(request.args.get('id'))
-    transfer = Transfer.find_one({'_id': transfer_id})
+    transfer = Transfer.find_one({'_id': ObjectId(request.args['id'])})
     if not transfer:
         return jsonify(name=None)
     params = {
@@ -45,8 +47,7 @@ def update():
 
 @app.route('/transfers/cancel')
 def cancel():
-    transfer_id = ObjectId(request.args.get('id'))
-    Transfer.cancel(transfer_id)
+    Transfer.cancel(ObjectId(request.args['id']))
     return jsonify(result=True)
 
 def truncate(val, count=80):

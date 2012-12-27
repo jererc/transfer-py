@@ -9,21 +9,23 @@ class UriError(Exception): pass
 
 def get_transfer_type(src, dst):
     schemes = []
-    for uri in (src, dst):
-        scheme = urlparse(uri).scheme
-        if scheme:
-            schemes.append(scheme)
+    for uris in (src, dst):
+        if not isinstance(uris, (list, tuple)):
+            uris = [uris]
+        for uri in uris:
+            scheme = urlparse(uri).scheme
+            if scheme:
+                schemes.append(scheme)
+
     schemes = list(set(schemes))
     if len(schemes) != 1:
         return
-
-    if schemes[0] == 'magnet':
-        type = 'torrent'
-    elif schemes[0] == 'https':
-        type = 'http'
-    else:
-        type = schemes[0]
-    return type
+    res = schemes[0]
+    if res == 'magnet':
+        res = 'torrent'
+    elif res == 'https':
+        res = 'http'
+    return res
 
 def parse_uri(uri):
     parsed = urlparse(uri)
