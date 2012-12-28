@@ -3,8 +3,8 @@ import re
 from datetime import datetime
 import logging
 
+from systools.network import is_local
 from systools.network.ssh import Host
-from systools.network import get_ip
 
 from transfer.utils.utils import parse_uri
 
@@ -42,10 +42,9 @@ class SftpTransfer(object):
         self.src_host = self._get_client(self.src)
         self.dst_host = self._get_client(self.dst)
 
-        local_ips = get_ip()
-        if self.src_host and self.src['host'] in local_ips:
+        if self.src_host and is_local(self.src['host']):
             self.src_host = None
-        if self.dst_host and self.dst['host'] in local_ips:
+        if self.dst_host and is_local(self.dst['host']):
             self.dst_host = None
         if self.src_host and self.dst_host:
             raise SftpError('source and destination can\'t be both remote')

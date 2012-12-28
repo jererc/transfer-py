@@ -27,7 +27,7 @@ class RsyncTransfer(object):
         except Exception, e:
             raise RsyncError('failed to connect to host %s: %s' % (info['host'], str(e)))
         if client.run_ssh('rsync --version', use_sudo=True)[-1] != 0:
-            raise RsyncNotFound('failed to find rsync on host %s' % info['host'])
+            raise RsyncNotFound('failed to find rsync at host %s' % info['host'])
         return client
 
     def _get_sync_info(self, src, dst):
