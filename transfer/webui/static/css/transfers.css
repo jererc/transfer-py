@@ -16,19 +16,19 @@
     text-align: center;
     text-decoration: none;
     color: white;
-    }
+}
 
 .progressbox {
     margin-top: 4px;
     bottom: 0;
-    }
+}
 .progress {
     width: 100%;
     height: 2px;
     background: #333;
-    }
+}
 .progressbar {
     display: none;
     width: 0;
     border: 1px solid green;
-    }
+}

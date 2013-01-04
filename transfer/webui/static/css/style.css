@@ -5,22 +5,22 @@ html, body {
     color: #bbb;
     font: 12px helvetica, arial, sans-serif;
     font-weight: lighter;
-    }
+}
 
 html {
     overflow-y: scroll;
-    }
+}
 
 a, a:link, a:active, a:visited {
     text-decoration: none;
     color: #555;
-    }
+}
 a.highlight {
     color: #bbb;
-    }
+}
 a:hover {
     color: white;
-    }
+}
 
 table {
     border: 0;
@@ -28,22 +28,22 @@ table {
     margin: 0;
     padding: 0;
     border-collapse: collapse; /* 'cellspacing' equivalent */
-    }
+}
 table td, table th {
     padding: 2px 0 2px 0; /* 'cellpadding' equivalent */
-    }
+}
 
 form {
     margin: 0;
     padding: 0;
-    }
+}
 input, select, button {
     border-radius: 2px;
     background: #353535;
     border: 0;
     color: #888;
     font: 12px helvetica, arial, sans-serif;
-    }
+}
 
 pre {
     white-space: pre-wrap; /* css-3 */
@@ -57,52 +57,52 @@ pre {
     padding: 4px;
     overflow: auto;
     font: 11px "Lucida Console", Monaco, monospace;
-    }
+}
 
 .content {
     margin: 0 160px 0 160px;
-    }
+}
 .content_div {
     margin-top: 2px;
     background: #272727;
-    }
+}
 .content_element {
     position: relative;
     padding: 8px;
-    }
+}
 .content_new {
     background: #222;
     padding: 8px;
-    }
+}
 .element_info, .element_edit, .element_details, .element_new {
     display: none;
     padding: 8px;
-    }
+}
 .element_highlight {
     background: #2d2d2d;
-    }
+}
 .element_actions {
     display: none;
     position: absolute;
     padding: 8px;
     top: 0;
     right: 0;
-    }
+}
 .element_new_actions {
     padding: 8px;
     text-align: center;
-    }
+}
 .name {
     font-size: 14px;
     vertical-align: bottom;
-    }
+}
 .details_title {
     width: 160px;
-    }
+}
 
 .img_button {
     height: 20px;
-    }
+}
 
 /* the overlayed element */
 .add_overlay {
@@ -111,7 +111,7 @@ pre {
     width: 100%;
     height: auto;
     background: transparent;
-    }
+}
 .add_message {
     margin: 0;
     padding: 0;
@@ -119,4 +119,4 @@ pre {
     width: 100%;
     text-align: center;
     font: 20px sans-serif;
-    }
+}
