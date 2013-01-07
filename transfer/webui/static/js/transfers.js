@@ -1,3 +1,5 @@
+var showDelay;
+
 function initAddOverlay() {
     $('#overlay_trigger').overlay({
         mask: 'black',
@@ -6,16 +8,22 @@ function initAddOverlay() {
 };
 
 function initActions() {
-    $('.content_element').mouseover(function() {
+    $('.content_element').mouseenter(function() {
         $(this).addClass('element_highlight');
         $(this).find('.element_actions').show();
+        var element = $(this).find('.element_info');
+        showDelay = setTimeout(function () {
+            element.slideDown('fast');
+        }, 600);
     });
     $('.content_element').mouseleave(function() {
+        clearTimeout(showDelay);
         $(this).removeClass('element_highlight');
         $(this).find('.element_actions').hide();
+        $(this).find('.element_info').slideUp('slow');
     });
 
-    $('.img_button[alt="add"]').mouseover(function() {
+    $('.img_button[alt="add"]').mouseenter(function() {
         var content = $(this).parents('.content_new')[0];
         $(content).addClass('element_highlight', 200);
         $(content).find('.element_new').slideDown('fast');
