@@ -37,11 +37,13 @@ def update():
     transfer = Transfer.find_one({'_id': ObjectId(request.args['id'])})
     if not transfer:
         return jsonify(name=None)
+    info = transfer.get('info', {})
     params = {
         'name': truncate(transfer['info']['name']),
         'progress': int(transfer.get('progress') or 0),
         'transferred': int(transfer.get('transferred') or 0) / 1024 ** 2,
         'size': int(transfer.get('total') or 0) / 1024 ** 2,
+        'transfer_rate': int(info.get('transfer_rate') or 0) / 1024,
         }
     return jsonify(**params)
 

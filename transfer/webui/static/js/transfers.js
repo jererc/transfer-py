@@ -85,6 +85,7 @@ function updateTransfer() {
                         contentInfo.find('.progress').html(data.progress);
                         contentInfo.find('.transferred').html(data.transferred);
                         contentInfo.find('.size').html(data.size);
+                        contentInfo.find('.transfer_rate').html(data.transfer_rate);
 
                         if (data.progress > 0) {
                             var width_total = download.find('.progress').width();

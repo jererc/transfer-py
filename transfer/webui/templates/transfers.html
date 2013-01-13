@@ -81,6 +81,10 @@
                     <td><span class="size"></span> MB</td>
                 </tr>
                 <tr>
+                    <td class="details_title">Download rate:</td>
+                    <td><span class="transfer_rate"></span> KB/s</td>
+                </tr>
+                <tr>
                     <td class="details_title">Progress:</td>
                     <td><span class="progress"></span> %</td>
                 </tr>
@@ -91,12 +95,6 @@
                         <td>{% if val %}{{ val }}{% else %}-{% endif %}</td>
                     </tr>
                 {% endfor %}
-                {% if item.info.transfer_rate %}
-                    <tr>
-                        <td class="details_title">Download rate:</td>
-                        <td>{{ (item.info.transfer_rate / 1024)|int }} KB/s</td>
-                    </tr>
-                {% endif %}
                 {% if item.info.files %}
                     {% for file in item.info.files %}
                     <tr>
