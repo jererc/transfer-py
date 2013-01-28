@@ -1,34 +1,35 @@
-.transfer_type {
+.transfer-type {
     display: inline-block;
-    width: 70px;
-    margin-right: 4px;
-    padding: 2px;
-    background: #708090;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -o-border-radius: 3px;
-    -ms-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    border-radius: 3px;
-    letter-spacing: 1px;
-    text-shadow: 1px 1px 1px rgba(25, 25, 25, 0.7);
+    width: 7em;
+    margin-right: .4em;
+    padding: .2em;
+    background-color: #708090;
+    -moz-border-radius: .3em;
+    -webkit-border-radius: .3em;
+    -o-border-radius: .3em;
+    -ms-border-radius: .3em;
+    -khtml-border-radius: .3em;
+    border-radius: .3em;
+    letter-spacing: .1em;
+    text-shadow: .1em .1em .1em rgba(25, 25, 25, 0.7);
     font-weight: bold;
     text-align: center;
     text-decoration: none;
+    font-size: 1.4em;
     color: white;
 }
 
 .progressbox {
-    margin-top: 4px;
+    margin-top: .4em;
     bottom: 0;
 }
 .progress {
     width: 100%;
-    height: 2px;
-    background: #333;
+    height: .2em;
+    background-color: #333;
 }
 .progressbar {
     display: none;
     width: 0;
-    border: 1px solid green;
+    border: .1em solid green;
 }

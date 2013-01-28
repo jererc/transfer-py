@@ -1,47 +1,71 @@
-var showDelay;
+var showDelays = {};
 
-function initAddOverlay() {
-    $('#overlay_trigger').overlay({
-        mask: 'black',
-        top: 'center',
-    });
+
+function toggleElementNew(element, direction, delay) {
+    var id = 'new';
+    clearTimeout(showDelays[id]);
+    var info = $(element).find('.element-new');
+    showDelays[id] = setTimeout(function () {
+        if (direction == 'up') {
+            info.slideUp('slow', function() {
+                $(element).removeClass('element-highlight', 200);
+            });
+        } else {
+            info.slideDown('fast', function() {
+                $(element).addClass('element-highlight');
+            });
+        }
+    }, delay);
+};
+
+function toggleElement(element, direction, delay) {
+    var id = $(element).attr('data-id');
+    clearTimeout(showDelays[id]);
+    var info = $(element).find('.element-info');
+    showDelays[id] = setTimeout(function () {
+        if (direction == 'up') {
+            info.slideUp('slow');
+        } else {
+            info.slideDown('fast');
+        }
+    }, delay);
 };
 
 function initActions() {
-    $('.content_element').mouseenter(function() {
-        $(this).addClass('element_highlight');
-        $(this).find('.element_actions').show();
-        var element = $(this).find('.element_info');
-        showDelay = setTimeout(function () {
-            element.slideDown('fast');
-        }, 600);
+    $('.content-new').mouseenter(function() {
+        $(this).addClass('element-highlight');
+        toggleElementNew(this, 'down', 600);
     });
-    $('.content_element').mouseleave(function() {
-        clearTimeout(showDelay);
-        $(this).removeClass('element_highlight');
-        $(this).find('.element_actions').hide();
-        $(this).find('.element_info').delay(2000).slideUp('slow');
+    $('.content-new').mouseleave(function() {
+        toggleElementNew(this, 'up', 600);
     });
 
-    $('.img_button[alt="add"]').mouseenter(function() {
-        var content = $(this).parents('.content_new')[0];
-        $(content).addClass('element_highlight', 200);
-        $(content).find('.element_new').slideDown('fast');
+    $('.content-element').mouseenter(function() {
+        $(this).addClass('element-highlight');
+        $(this).find('.element-actions').show();
+        toggleElement(this, 'down', 600);
     });
-    $('.content_new').mouseleave(function() {
-        $(this).find('.element_new').slideUp('slow', function() {
-            $('.content_new').removeClass('element_highlight', 200);
+    $('.content-element').mouseleave(function() {
+        $(this).removeClass('element-highlight');
+        $(this).find('.element-actions').hide();
+        toggleElement(this, 'up', 2000);
+    });
+
+    $('.img-button[alt="add"]').click(function() {
+        var div = $(this).parents('.content-new')[0];
+        var form = $(div).find('form');
+        form.find('.default-text').each(function() {
+            if ($(this).val() == this.title) {
+                $(this).val("");
+            }
         });
-    });
 
-    $('.img_button[alt="add"]').bind('click', function() {
-        var div = $(this).parents('.content_new')[0];
         $.getJSON($SCRIPT_ROOT + '/transfers/add',
-            $(div).find('form').serializeArray(),
+            form.serializeArray(),
             function(data) {
                 if (data.message) {
-                    $('.add_message').text(data.message);
-                    $('#overlay_trigger').overlay().load();
+                    initInputFields();
+                    $('.add-message').text(data.message);
                 } else {
                     location.reload();
                 }
@@ -49,14 +73,8 @@ function initActions() {
         return false;
     });
 
-    $('.img_button[alt="more"]').bind('click', function() {
-        var div = $(this).parents('.content_element')[0];
-        $(div).find('.element_info').slideToggle('fast');
-        return false;
-    });
-
-    $('.img_button[alt="remove"]').bind('click', function() {
-        var div = $(this).parents('.content_element')[0];
+    $('.img-button[alt="remove"]').click(function() {
+        var div = $(this).parents('.content-element')[0];
         $.getJSON($SCRIPT_ROOT + '/transfers/cancel',
             {id: $(div).find('input[name="id"]').val()},
             function(data) {
@@ -70,10 +88,10 @@ function initActions() {
 
 function updateTransfer() {
     if (hasFocus) {
-        $('.content_element').each(function(result) {
+        $('.content-element').each(function(result) {
             var download = $(this);
             var progressBar = $(this).find('.progressbar');
-            var contentInfo = $(this).find('.element_info');
+            var contentInfo = $(this).find('.element-info');
 
             $.getJSON($SCRIPT_ROOT + '/transfers/update',
                 {id: $(this).find('input[name="id"]').val()},
@@ -81,15 +99,15 @@ function updateTransfer() {
                     if (data.name == null) {
                         download.fadeOut();
                     } else {
-                        download.find('.name').html(data.name);
-                        contentInfo.find('.progress').html(data.progress);
-                        contentInfo.find('.transferred').html(data.transferred);
-                        contentInfo.find('.size').html(data.size);
-                        contentInfo.find('.transfer_rate').html(data.transfer_rate);
+                        download.find('.transfer-name').html(data.name);
+                        contentInfo.find('.transfer-progress').html(data.progress);
+                        contentInfo.find('.transfer-transferred').html(data.transferred);
+                        contentInfo.find('.transfer-size').html(data.size);
+                        contentInfo.find('.transfer-rate').html(data.transfer_rate);
 
                         if (data.progress > 0) {
-                            var width_total = download.find('.progress').width();
-                            progressBar.width(parseInt(data.progress * width_total / 100));
+                            var widthTotal = download.find('.progress').width();
+                            progressBar.width(parseInt(data.progress * widthTotal / 100));
                             progressBar.show();
                         } else {
                             progressBar.hide();
@@ -101,7 +119,6 @@ function updateTransfer() {
 };
 
 $(function() {
-    initAddOverlay();
     initActions();
     updateTransfer();
     var progressInterval = window.setInterval(updateTransfer, 5000);

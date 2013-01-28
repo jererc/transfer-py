@@ -22,7 +22,7 @@ def add():
     src = request.args.get('src')
     dst = request.args.get('dst')
     if not src or not dst:
-        return jsonify(message='missing source or destination')
+        return jsonify(message='missing field')
 
     if ',' in src:
         src = re.split(r'[,\s]+', src)
@@ -39,7 +39,7 @@ def update():
         return jsonify(name=None)
     info = transfer.get('info', {})
     params = {
-        'name': truncate(transfer['info']['name']),
+        'name': _truncate(transfer['info']['name']),
         'progress': int(transfer.get('progress') or 0),
         'transferred': int(transfer.get('transferred') or 0) / 1024 ** 2,
         'size': int(transfer.get('total') or 0) / 1024 ** 2,
@@ -52,7 +52,7 @@ def cancel():
     Transfer.cancel(ObjectId(request.args['id']))
     return jsonify(result=True)
 
-def truncate(val, count=80):
+def _truncate(val, count=80):
     if len(val) > count:
         return '%s...' % val[:count]
     return val

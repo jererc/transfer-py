@@ -9,22 +9,20 @@
 {% endblock %}
 
 {% block content %}
-<div id="overlay_trigger" rel="#add_overlay"></div>
-
-<div class="content_div content_new">
-    <div class="element_new">
+<div class="content-div content-new">
+    <div class="element-new">
         <form>
             <table>
                 <tr>
-                    <td class="details_title">Source:</td>
-                    <td><input type="text" name="src" size="40" value="" /></td>
+                    <td><span class="text-normal">Source</span></td>
+                    <td><input class="default-text" type="text" name="src" title="source URI" /></td>
                 </tr>
                 <tr>
-                    <td class="details_title">Destination:</td>
-                    <td><input type="text" name="dst" size="40" value="" /></td>
+                    <td><span class="text-normal">Destination</span></td>
+                    <td><input class="default-text" type="text" name="dst" title="destination path" /></td>
                 </tr>
                 <tr>
-                    <td class="details_title">Type:</td>
+                    <td><span class="text-normal">Type</span></td>
                     <td>
                         <select title="type" name="type">
                             <option value="">auto</option>
@@ -34,20 +32,24 @@
                 </tr>
             </table>
         </form>
+
+        <div>
+            <pre class="add-message"></pre>
+        </div>
     </div>
 
-    <div class="element_new_actions">
-        <a href=""><img class="img_button" src="{{ url_for('static', filename='img/add.png') }}" alt="add"></img></a>
+    <div class="element-new-actions">
+        <a href=""><img class="img-button" src="{{ url_for('static', filename='img/add.png') }}" alt="add"></img></a>
     </div>
 </div>
 
 {% for item in items %}
-    <div class="content_div content_element">
-        <div class="element_name">
+    <div class="content-div content-element" data-id="{{ item._id }}">
+        <div class="element-name">
             <input type="hidden" name="id" value="{{ item._id }}" />
 
-            <span class="transfer_type">{{ item.type }}</span>
-            <span class="name"></span>
+            <span class="transfer-type">{{ item.type }}</span>
+            <span class="transfer-name text-title"></span>
             <div class="progressbox">
                 <div class="progress">
                     <div class="progressbar"></div>
@@ -55,57 +57,53 @@
             </div>
         </div>
 
-        <div class="element_actions">
-            {% if item.search_id %}
-                <a href="{{ url_for('searches', id=item.search_id) }}"><img class="img_button" src="{{ url_for('static', filename='img/info.png') }}"></img></a>
-            {% endif %}
-            <a href=""><img class="img_button" src="{{ url_for('static', filename='img/more.png') }}" alt="more"></img></a>
-            <a href=""><img class="img_button" src="{{ url_for('static', filename='img/remove.png') }}" alt="remove"></img></a>
+        <div class="element-actions">
+            <a href=""><img class="img-button" src="{{ url_for('static', filename='img/remove.png') }}" alt="remove"></img></a>
         </div>
 
-        <div class="element_info">
+        <div class="element-info text-normal">
             <table>
                 {% for key, val in [('Created', item.created), ('Started', item.started), ('Source', item.src|truncate(80, True)), ('Destination', item.dst)] %}
                     <tr>
-                        <td class="details_title">{{ key }}:</td>
+                        <td>{{ key }}:</td>
                         <td>{% if val != None %}{{ val }}{% else %}-{% endif %}</td>
                     </tr>
                 {% endfor %}
 
                 <tr>
-                    <td class="details_title">Transferred:</td>
-                    <td><span class="transferred"></span> MB</td>
+                    <td>Transferred:</td>
+                    <td><span class="transfer-transferred"></span> MB</td>
                 </tr>
                 <tr>
-                    <td class="details_title">Size:</td>
-                    <td><span class="size"></span> MB</td>
+                    <td>Size:</td>
+                    <td><span class="transfer-size"></span> MB</td>
                 </tr>
                 <tr>
-                    <td class="details_title">Download rate:</td>
-                    <td><span class="transfer_rate"></span> KB/s</td>
+                    <td>Download rate:</td>
+                    <td><span class="transfer-rate"></span> KB/s</td>
                 </tr>
                 <tr>
-                    <td class="details_title">Progress:</td>
-                    <td><span class="progress"></span> %</td>
+                    <td>Progress:</td>
+                    <td><span class="transfer-progress"></span> %</td>
                 </tr>
 
                 {% for key, val in [('Hash', item.info.hash), ('Status', item.info.status), ('Last activity', item.info.date_active), ('Download directory', item.info.download_dir)] %}
                     <tr>
-                        <td class="details_title">{{ key }}:</td>
+                        <td>{{ key }}:</td>
                         <td>{% if val %}{{ val }}{% else %}-{% endif %}</td>
                     </tr>
                 {% endfor %}
                 {% if item.info.files %}
                     {% for file in item.info.files %}
                     <tr>
-                        <td class="details_title">{% if loop.first %}Files:{% endif %}</td>
+                        <td>{% if loop.first %}Files:{% endif %}</td>
                         <td>{{ file }}</td>
                     </tr>
                     {% endfor %}
                 {% endif %}
                 {% if item.info.error_string %}
                     <tr>
-                        <td class="details_title"><p class="title">Error:</p></td>
+                        <td><span>Error:</span></td>
                         <td>{{ item.info.error_string }}</td>
                     </tr>
                 {% endif %}
@@ -114,9 +112,4 @@
 
     </div>
 {% endfor %}
-
-<!-- overlayed element -->
-<div id="add_overlay" class="add_overlay">
-    <pre class="add_message"></pre>
-</div>
 {% endblock %}
