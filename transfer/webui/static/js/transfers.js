@@ -39,17 +39,27 @@ function initActions() {
     $('.content-new').mouseleave(function() {
         toggleElementNew(this, 'up', 600);
     });
-
     $('.content-element').mouseenter(function() {
         $(this).addClass('element-highlight');
-        $(this).find('.element-actions').show();
         toggleElement(this, 'down', 600);
     });
     $('.content-element').mouseleave(function() {
         $(this).removeClass('element-highlight');
-        $(this).find('.element-actions').hide();
         toggleElement(this, 'up', 2000);
     });
+
+    if (isMobile) {
+        $('.element-actions').each(function() {
+            $(this).show();
+        });
+    } else {
+        $('.content-element').mouseenter(function() {
+            $(this).find('.element-actions').show();
+        });
+        $('.content-element').mouseleave(function() {
+            $(this).find('.element-actions').hide();
+        });
+    }
 
     $('.img-button[alt="add"]').click(function() {
         var div = $(this).parents('.content-new')[0];
@@ -87,35 +97,36 @@ function initActions() {
 };
 
 function updateTransfer() {
-    if (hasFocus) {
-        $('.content-element').each(function(result) {
-            var download = $(this);
-            var progressBar = $(this).find('.progressbar');
-            var contentInfo = $(this).find('.element-info');
-
-            $.getJSON($SCRIPT_ROOT + '/transfers/update',
-                {id: $(this).find('input[name="id"]').val()},
-                function(data) {
-                    if (data.name == null) {
-                        download.fadeOut();
-                    } else {
-                        download.find('.transfer-name').html(data.name);
-                        contentInfo.find('.transfer-progress').html(data.progress);
-                        contentInfo.find('.transfer-transferred').html(data.transferred);
-                        contentInfo.find('.transfer-size').html(data.size);
-                        contentInfo.find('.transfer-rate').html(data.transfer_rate);
-
-                        if (data.progress > 0) {
-                            var widthTotal = download.find('.progress').width();
-                            progressBar.width(parseInt(data.progress * widthTotal / 100));
-                            progressBar.show();
-                        } else {
-                            progressBar.hide();
-                        }
-                    }
-                });
-        });
+    if (!hasFocus) {
+        return false;
     }
+    $('.content-element').each(function(result) {
+        var download = $(this);
+        var progressBar = $(this).find('.progressbar');
+        var contentInfo = $(this).find('.element-info');
+
+        $.getJSON($SCRIPT_ROOT + '/transfers/update',
+            {id: $(this).find('input[name="id"]').val()},
+            function(data) {
+                if (data.name == null) {
+                    download.fadeOut();
+                } else {
+                    download.find('.transfer-name').html(data.name);
+                    contentInfo.find('.transfer-progress').html(data.progress);
+                    contentInfo.find('.transfer-transferred').html(data.transferred);
+                    contentInfo.find('.transfer-size').html(data.size);
+                    contentInfo.find('.transfer-rate').html(data.transfer_rate);
+
+                    if (data.progress > 0) {
+                        var widthTotal = download.find('.progress').width();
+                        progressBar.width(parseInt(data.progress * widthTotal / 100));
+                        progressBar.show();
+                    } else {
+                        progressBar.hide();
+                    }
+                }
+            });
+    });
 };
 
 $(function() {
