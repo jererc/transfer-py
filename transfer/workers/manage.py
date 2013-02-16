@@ -24,14 +24,14 @@ def manage_torrent(hash, dst):
     client = get_client()
     if not client:
         return
-    torrent = client.get(hash)
+    torrent = client.get_torrent(hash=hash)
     if not torrent:
         return
 
     if not client.check_torrent_files(torrent):
         if torrent.progress == 100 and not client.move_files(torrent, settings.DST_INVALID):
             return
-        if client.remove(hash, delete_data=True):
+        if client.remove_torrent(hash=hash, delete_data=True):
             logger.debug('removed invalid torrent "%s" (%s%% done)' % (torrent.name, int(torrent.progress)))
         update_transfer(hash)
 
@@ -39,19 +39,19 @@ def manage_torrent(hash, dst):
         destination = client.get_destination_dir(torrent, dst)
         if not client.move_files(torrent, destination):
             return
-        if client.remove(hash):
+        if client.remove_torrent(hash=hash):
             logger.info('moved finished torrent "%s" to %s' % (torrent.name, dst))
         update_transfer(hash)
 
     elif settings.DELTA_TORRENT_ACTIVE:
         date = torrent.date_active or torrent.date_added
         if date < datetime.utcnow() - timedelta(hours=settings.DELTA_TORRENT_ACTIVE):
-            if client.remove(hash, delete_data=True):
+            if client.remove_torrent(hash=hash, delete_data=True):
                 logger.debug('removed inactive torrent "%s": no activity since %s' % (torrent.name, date))
 
     elif settings.DELTA_TORRENT_ADDED \
             and torrent.date_added < datetime.utcnow() - timedelta(hours=settings.DELTA_TORRENT_ADDED):
-        if client.remove(hash, delete_data=True):
+        if client.remove_torrent(hash=hash, delete_data=True):
             logger.debug('removed obsolete torrent "%s": added %s' % (torrent.name, torrent.date_added))
 
 @loop(10)
@@ -68,7 +68,7 @@ def run():
             }):
         if transfer['type'] == 'torrent' and 'hash' in transfer['info']:
             try:
-                torrent = client.get(transfer['info']['hash'])
+                torrent = client.get_torrent(hash=transfer['info']['hash'])
             except TorrentError:
                 continue
 
@@ -82,11 +82,11 @@ def run():
                 transfer['progress'] = torrent.progress
             Transfer.save(transfer, safe=True)
 
-    for torrent in client.torrents():
+    for torrent in client.iter_torrents():
         transfer = Transfer.find_one({'info.hash': torrent.hash},
                 sort=[('created', DESCENDING)])
         if transfer and transfer['finished']:
-            client.remove(torrent.hash, delete_data=True)
+            client.remove_torrent(hash=torrent.hash, delete_data=True)
             logger.debug('aborted torrent "%s" (%s)' % (torrent.name, torrent.hash))
         else:
             dst = transfer['dst'] if transfer else settings.DEFAULT_TORRENT_DST

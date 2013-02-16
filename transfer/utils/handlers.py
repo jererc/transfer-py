@@ -171,7 +171,7 @@ class Torrent(object):
             return
 
         try:
-            transfer['info'] = client.add(transfer['src'])
+            transfer['info'] = client.add_torrent(transfer['src'])
         except TorrentExists, e:
             transfer['finished'] = datetime.utcnow()
             logger.debug('failed to start torrent: %s' % str(e))
