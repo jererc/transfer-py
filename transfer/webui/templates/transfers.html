@@ -9,36 +9,36 @@
 {% endblock %}
 
 {% block content %}
-<div class="content-div content-new">
-    <div class="element-new">
-        <form>
-            <table>
-                <tr>
-                    <td><span class="text-normal">Source</span></td>
-                    <td><input class="input-text" type="text" name="src" placeholder="source URI" /></td>
-                </tr>
-                <tr>
-                    <td><span class="text-normal">Destination</span></td>
-                    <td><input class="input-text" type="text" name="dst" placeholder="destination path" /></td>
-                </tr>
-                <tr>
-                    <td><span class="text-normal">Type</span></td>
-                    <td>
-                        <select title="type" name="type">
-                            <option value="">auto</option>
-                            <option value="torrent">torrent</option>
-                        </select>
-                    </td>
-                </tr>
-            </table>
-        </form>
+<div class="content-new-trigger"></div>
 
-        <div>
-            <pre class="add-message"></pre>
-        </div>
+<div class="content-div content-new element-highlight">
+    <form>
+        <table>
+            <tr>
+                <td><span class="text-normal">Source</span></td>
+                <td><input class="input-text" type="text" name="src" placeholder="source URI" /></td>
+            </tr>
+            <tr>
+                <td><span class="text-normal">Destination</span></td>
+                <td><input class="input-text" type="text" name="dst" placeholder="destination path" /></td>
+            </tr>
+            <tr>
+                <td><span class="text-normal">Type</span></td>
+                <td>
+                    <select title="type" name="type">
+                        <option value="">auto</option>
+                        <option value="torrent">torrent</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <div>
+        <pre class="add-message"></pre>
     </div>
 
-    <div class="element-new-actions">
+    <div class="element-actions-new">
         <a href=""><img class="img-button" src="{{ url_for('static', filename='img/add.png') }}" alt="add"></img></a>
     </div>
 </div>

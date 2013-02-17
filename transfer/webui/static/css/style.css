@@ -1,19 +1,33 @@
 .content {
-    margin: 0 15% 14em 15%;
+    margin: 5em 15% 14em 15%;
 }
 .content-div {
-    margin-top: .2em;
+    padding: .8em;
     background-color: #272727;
 }
 .content-new {
+    position: absolute;
+    display: none;
+    z-index: 999;
+    left: 15%;
+    right: 15%;
+    top: 0;
+    -webkit-box-shadow: 0 0 4em rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 0 4em rgba(0, 0, 0, 0.2);
+}
+.content-new-trigger {
+    position: absolute;
+    left: 15%;
+    right: 15%;
+    top: 0;
+    height: 5em;
     background-color: transparent;
-    padding: .8em;
 }
 .content-element {
     position: relative;
-    padding: .8em;
+    margin-top: 1px;
 }
-.element-info, .element-new {
+.element-info {
     display: none;
     padding: .8em;
 }
@@ -28,7 +42,7 @@
     top: 0;
     margin-top: .5em;
 }
-.element-new-actions {
+.element-actions-new {
     padding: .8em;
     text-align: center;
 }

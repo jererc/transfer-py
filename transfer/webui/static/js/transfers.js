@@ -1,51 +1,40 @@
 var showDelays = {};
 
 
-function toggleElementNew(element, direction, delay) {
-    var id = 'new';
+function toggleElement(id, element, direction, delay) {
     clearTimeout(showDelays[id]);
-    var info = $(element).find('.element-new');
-    showDelays[id] = setTimeout(function () {
+    if (!element) {
+        return false;
+    }
+    showDelays[id] = setTimeout(function() {
         if (direction == 'up') {
-            info.slideUp('slow', function() {
-                $(element).removeClass('element-highlight', 200);
-            });
+            element.slideUp(300);
         } else {
-            info.slideDown('fast', function() {
-                $(element).addClass('element-highlight');
-            });
-        }
-    }, delay);
-};
-
-function toggleElement(element, direction, delay) {
-    var id = $(element).attr('data-id');
-    clearTimeout(showDelays[id]);
-    var info = $(element).find('.element-info');
-    showDelays[id] = setTimeout(function () {
-        if (direction == 'up') {
-            info.slideUp('slow');
-        } else {
-            info.slideDown('fast');
+            element.slideDown(100);
         }
     }, delay);
 };
 
 function initActions() {
-    $('.content-new').mouseenter(function() {
-        $(this).addClass('element-highlight');
-        toggleElementNew(this, 'down', 600);
+    $('.content-new-trigger, .content-new').mouseenter(function() {
+        toggleElement('new', $('.content-new'), 'down', 500);
+    });
+    $('.content-new-trigger').mouseleave(function() {
+        toggleElement('new');
     });
     $('.content-new').mouseleave(function() {
-        toggleElementNew(this, 'up', 600);
+        toggleElement('new', $(this), 'up', 600);
     });
+
     $('.content-element').mouseenter(function() {
         $(this).addClass('element-highlight');
-        toggleElement(this, 'down', 600);
+        toggleElement($(this).attr('data-id'),
+                $(this).find('.element-info'), 'down', 600);
     });
     $('.content-element').mouseleave(function() {
         $(this).removeClass('element-highlight');
-        toggleElement(this, 'up', 2000);
+        toggleElement($(this).attr('data-id'),
+                $(this).find('.element-info'), 'up', 2000);
     });
 
     if (isMobile) {
