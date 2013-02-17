@@ -19,26 +19,9 @@ function handleFocus() {
     });
 };
 
-function initInputFields() {
-    $('.default-text').focus(function() {
-        if ($(this).val() == $(this)[0].title) {
-            $(this).removeClass('default-text-active');
-            $(this).val("");
-        }
-    });
-    $('.default-text').blur(function() {
-        if ($(this).val() == "") {
-            $(this).addClass('default-text-active');
-            $(this).val($(this)[0].title);
-        }
-    });
-    $('.default-text').blur();
-};
-
 $(function() {
     if (isMobile) {
         $('body').addClass('wide');
     }
     handleFocus();
-    initInputFields();
 });
