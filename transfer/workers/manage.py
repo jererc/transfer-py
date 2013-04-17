@@ -28,11 +28,12 @@ def manage_torrent(hash, dst):
     if not torrent:
         return
 
-    if not client.check_torrent_files(torrent):
+    if not client.check_torrent_files(torrent,
+            check_unfinished=settings.CHECK_UNFINISHED_TORRENTS):
         if torrent.progress == 100 and not client.move_files(torrent, settings.DST_INVALID):
             return
         if client.remove_torrent(hash=hash, delete_data=True):
-            logger.debug('removed invalid torrent "%s" (%s%% done)' % (torrent.name, int(torrent.progress)))
+            logger.info('removed invalid torrent "%s" (%s%% done)' % (torrent.name, int(torrent.progress)))
         update_transfer(hash)
 
     elif torrent.progress == 100:
@@ -65,31 +66,39 @@ def run():
     for transfer in Transfer.find({
             'started': {'$ne': None},
             'finished': None,
+            'type': 'torrent',
             }):
-        if transfer['type'] == 'torrent' and 'hash' in transfer['info']:
-            try:
-                torrent = client.get_torrent(hash=transfer['info']['hash'])
-            except TorrentError:
-                continue
-
-            if not torrent:
-                transfer['finished'] = datetime.utcnow()
-                logger.debug('torrent %s is not queued' % transfer['info']['hash'])
-            else:
-                transfer['info'] = torrent
-                transfer['transferred'] = torrent.transferred
-                transfer['total'] = torrent.size
-                transfer['progress'] = torrent.progress
-            Transfer.save(transfer, safe=True)
+        hash = transfer['info'].get('hash')
+        if not hash:
+            continue
+        try:
+            torrent = client.get_torrent(hash=hash)
+        except TorrentError:
+            continue
+        if not torrent:
+            transfer['finished'] = datetime.utcnow()
+            logger.debug('torrent %s is not queued' % hash)
+        else:
+            transfer['info'] = torrent
+            transfer['transferred'] = torrent.transferred
+            transfer['total'] = torrent.size
+            transfer['progress'] = torrent.progress
+        Transfer.save(transfer, safe=True)
 
     for torrent in client.iter_torrents():
         transfer = Transfer.find_one({'info.hash': torrent.hash},
                 sort=[('created', DESCENDING)])
-        if transfer and transfer['finished']:
+        if not transfer or (transfer['finished'] \
+                and torrent.date_added > transfer['finished']):
+            now = datetime.utcnow()
+            Transfer.add(torrent.magnet_url, settings.DEFAULT_TORRENT_DST,
+                    type='torrent', added=now, started=now,
+                    info={'hash': torrent.hash})
+        elif transfer['finished']:
             client.remove_torrent(hash=torrent.hash, delete_data=True)
-            logger.debug('aborted torrent "%s" (%s)' % (torrent.name, torrent.hash))
+            logger.debug('removed finished torrent "%s" (%s)' % (torrent.name, torrent.hash))
         else:
-            dst = transfer['dst'] if transfer else settings.DEFAULT_TORRENT_DST
             target = '%s.workers.manage.manage_torrent' % settings.PACKAGE_NAME
             get_factory().add(target=target,
-                    kwargs={'hash': torrent.hash, 'dst': dst}, timeout=TIMEOUT_MANAGE)
+                    kwargs={'hash': torrent.hash, 'dst': transfer['dst']},
+                    timeout=TIMEOUT_MANAGE)

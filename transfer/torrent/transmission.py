@@ -53,6 +53,7 @@ class Transmission(object):
             'name': torrent.name,
             'status': torrent.status,
             'error_string': torrent.errorString,
+            'magnet_url': torrent.magnetLink,
             'torrent_file': torrent.torrentFile,
             'download_dir': torrent.downloadDir,
             'files': [f['name'] for f in torrent.files().values()],
@@ -73,10 +74,12 @@ class Transmission(object):
             for res in self.iter_torrents():
                 if res.hash == hash:
                     return res
-            raise TorrentError('failed to get torrent hash %s' % hash)
+            return
 
         try:
             res = self.client.get_torrent(id)
+        except KeyError:
+            return
         except Exception, e:
             raise TorrentError('failed to get torrent id %s: %s' % (id, str(e)))
         return self._get_torrent(res)
@@ -93,8 +96,10 @@ class Transmission(object):
             return
         return True
 
-    def check_torrent_files(self, torrent):
+    def check_torrent_files(self, torrent, check_unfinished=True):
         finished = torrent.progress == 100
+        if not check_unfinished and not finished:
+            return True
         for file in torrent.files:
             file = os.path.join(torrent.download_dir, file)
             if not check_download_file(file + '.part',

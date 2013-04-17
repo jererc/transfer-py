@@ -38,11 +38,10 @@ class Transfer(Model):
             'started': None,
             'finished': None,
             'tries': 0,
-            'info': {
-                'name': ', '.join(src) if isinstance(src, (list, tuple)) else src,
-                },
+            'info': {},
             }
         doc.update(parameters)
+        doc['info']['name'] = ', '.join(src) if isinstance(src, (list, tuple)) else src
         return cls.insert(doc, safe=True)
 
     @classmethod

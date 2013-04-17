@@ -1,6 +1,26 @@
+var slideDelays = {};
 var isMobile = isMobile();
 var hasFocus = true;
 
+
+//
+// Tools
+//
+function slideDelay(id, element, direction, delay) {
+    clearTimeout(slideDelays[id]);
+    if (!element) {
+        return false;
+    }
+    slideDelays[id] = setTimeout(function() {
+        if (direction == 'up') {
+            element.stop(true);
+            element.slideUp(100);
+        } else {
+            element.stop(true);
+            element.slideDown(150);
+        }
+    }, delay);
+};
 
 function isMobile() {
     if (navigator.userAgent.match(/iPhone|iPod|iPad|Android|WebOS|Blackberry|Symbian|Bada/i)) {
@@ -10,6 +30,10 @@ function isMobile() {
     }
 };
 
+
+//
+// Init
+//
 function setFontSize() {
     if (!isMobile) {
         var size = screen.width;

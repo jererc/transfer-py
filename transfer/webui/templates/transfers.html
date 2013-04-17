@@ -12,33 +12,35 @@
 <div class="content-new-trigger"></div>
 
 <div class="content-div content-new element-highlight">
-    <form>
-        <table>
-            <tr>
-                <td><span class="text-normal">Source</span></td>
-                <td><input class="input-text" type="text" name="src" placeholder="source URI" /></td>
-            </tr>
-            <tr>
-                <td><span class="text-normal">Destination</span></td>
-                <td><input class="input-text" type="text" name="dst" placeholder="destination path" /></td>
-            </tr>
-            <tr>
-                <td><span class="text-normal">Type</span></td>
-                <td>
-                    <select title="type" name="type">
-                        <option value="">auto</option>
-                        <option value="torrent">torrent</option>
-                    </select>
-                </td>
-            </tr>
-        </table>
-    </form>
+    <div class="element-base">
+        <form>
+            <table class="table-info">
+                <tr>
+                    <td><span>Source</span></td>
+                    <td><input class="input-text" type="text" name="src" placeholder="source URI" /></td>
+                </tr>
+                <tr>
+                    <td><span>Destination</span></td>
+                    <td><input class="input-text" type="text" name="dst" placeholder="destination path" /></td>
+                </tr>
+                <tr>
+                    <td><span>Type</span></td>
+                    <td>
+                        <select title="type" name="type">
+                            <option value="">auto</option>
+                            <option value="torrent">torrent</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
 
     <div>
         <pre class="add-message"></pre>
     </div>
 
-    <div class="element-actions-new">
+    <div class="element-new-actions">
         <a href=""><img class="img-button" src="{{ url_for('static', filename='img/add.png') }}" alt="add"></img></a>
     </div>
 </div>
@@ -61,50 +63,50 @@
             <a href=""><img class="img-button" src="{{ url_for('static', filename='img/remove.png') }}" alt="remove"></img></a>
         </div>
 
-        <div class="element-info text-normal">
-            <table>
+        <div class="element-info element-base">
+            <table class="table-info">
                 {% for key, val in [('Created', item.created), ('Started', item.started), ('Source', item.src|truncate(80, True)), ('Destination', item.dst)] %}
                     <tr>
-                        <td>{{ key }}:</td>
-                        <td>{% if val != None %}{{ val }}{% else %}-{% endif %}</td>
+                        <td><span>{{ key }}:</span></td>
+                        <td><span>{% if val != None %}{{ val }}{% else %}-{% endif %}</span></td>
                     </tr>
                 {% endfor %}
 
                 <tr>
-                    <td>Transferred:</td>
+                    <td><span>Transferred:</span></td>
                     <td><span class="transfer-transferred"></span> MB</td>
                 </tr>
                 <tr>
-                    <td>Size:</td>
+                    <td><span>Size:</span></td>
                     <td><span class="transfer-size"></span> MB</td>
                 </tr>
                 <tr>
-                    <td>Download rate:</td>
+                    <td><span>Download rate:</span></td>
                     <td><span class="transfer-rate"></span> KB/s</td>
                 </tr>
                 <tr>
-                    <td>Progress:</td>
+                    <td><span>Progress:</span></td>
                     <td><span class="transfer-progress"></span> %</td>
                 </tr>
 
                 {% for key, val in [('Hash', item.info.hash), ('Status', item.info.status), ('Last activity', item.info.date_active), ('Download directory', item.info.download_dir)] %}
                     <tr>
-                        <td>{{ key }}:</td>
-                        <td>{% if val %}{{ val }}{% else %}-{% endif %}</td>
+                        <td><span>{{ key }}:</span></td>
+                        <td><span>{% if val %}{{ val }}{% else %}-{% endif %}</span></td>
                     </tr>
                 {% endfor %}
                 {% if item.info.files %}
                     {% for file in item.info.files %}
                     <tr>
-                        <td>{% if loop.first %}Files:{% endif %}</td>
-                        <td>{{ file }}</td>
+                        <td><span>{% if loop.first %}Files:{% endif %}</span></td>
+                        <td><span>{{ file }}</span></td>
                     </tr>
                     {% endfor %}
                 {% endif %}
                 {% if item.info.error_string %}
                     <tr>
                         <td><span>Error:</span></td>
-                        <td>{{ item.info.error_string }}</td>
+                        <td><span>{{ item.info.error_string }}</span></td>
                     </tr>
                 {% endif %}
             </table>

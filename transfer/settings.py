@@ -22,6 +22,7 @@ DEFAULT_TORRENT_DST = '/home/user/Downloads'
 DST_INVALID = '/home/user/Downloads/invalid'
 DELTA_TORRENT_ACTIVE = 24 * 4   # hours
 DELTA_TORRENT_ADDED = 24 * 15   # hours
+CHECK_UNFINISHED_TORRENTS = False
 
 # Rsync
 DEFAULT_RSYNC_ARGS = ['-ax', '--ignore-errors']

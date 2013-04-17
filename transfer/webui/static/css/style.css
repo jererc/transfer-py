@@ -27,6 +27,9 @@
     position: relative;
     margin-top: 1px;
 }
+.element-base {
+    padding: .8em;
+}
 .element-info {
     display: none;
     padding: .8em;
@@ -42,13 +45,16 @@
     top: 0;
     margin-top: .5em;
 }
-.element-actions-new {
+.element-new-actions {
     padding: .8em;
     text-align: center;
 }
 
-.title-td {
-    width: 16em;
+.table-info tr td:first-child {
+    width: 20em;
+}
+.table-info span {
+    font-size: 1.4em;
 }
 
 .text-title {
@@ -57,11 +63,9 @@
 .text-normal {
     font-size: 1.4em;
 }
-
 .input-text {
     width: 20em;
 }
-
 .img-button {
     height: 2.4em;
 }
