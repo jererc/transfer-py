@@ -3,7 +3,7 @@ import logging
 
 from systools.system import loop, timer
 
-from transfer import settings, get_factory, Transfer, get_callable
+from transfer import settings, Transfer, Settings, get_factory, get_callable
 
 
 logger = logging.getLogger(__name__)
@@ -28,12 +28,15 @@ def run():
             }):
         add_running(running, res['type'])
 
+    settings_ = Settings.get_settings('general')
+    retry_delta = timedelta(seconds=settings_['retry_delta'])
+
     for transfer in Transfer.find({'$or': [
             {'added': None},
             {
-            'added': {'$lt': datetime.utcnow() - timedelta(seconds=settings.RETRY_DELAY)},
+            'added': {'$lt': datetime.utcnow() - retry_delta},
             'started': None,
-            'tries': {'$lt': settings.MAX_TRIES},
+            'tries': {'$lt': settings_['max_tries']},
             },
             ]}):
         limit = settings.WORKERS_LIMITS.get(transfer['type'])

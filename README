@@ -3,7 +3,7 @@ Transfer.
 Handles http, ftp, sftp, rsync and torrent.
 
 
-Start the daemon and webui:
+Start the daemon:
 ./transfer/run.py
 
 

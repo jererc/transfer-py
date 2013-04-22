@@ -5,7 +5,7 @@ from pymongo import DESCENDING
 
 from systools.system import loop, timeout, timer
 
-from transfer import settings, Transfer, get_factory
+from transfer import settings, Transfer, Settings, get_factory
 from transfer.torrent import get_client
 from transfer.torrent.exceptions import TorrentError
 
@@ -30,30 +30,40 @@ def manage_torrent(hash, dst):
 
     if not client.check_torrent_files(torrent,
             check_unfinished=settings.CHECK_UNFINISHED_TORRENTS):
-        if torrent.progress == 100 and not client.move_files(torrent, settings.DST_INVALID):
+        invalid_dir = Settings.get_settings('paths')['invalid']
+        if torrent.progress == 100 and not client.move_files(torrent, invalid_dir):
             return
         if client.remove_torrent(hash=hash, delete_data=True):
             logger.info('removed invalid torrent "%s" (%s%% done)' % (torrent.name, int(torrent.progress)))
         update_transfer(hash)
+        return
 
-    elif torrent.progress == 100:
+    if torrent.progress == 100:
         destination = client.get_destination_dir(torrent, dst)
         if not client.move_files(torrent, destination):
             return
         if client.remove_torrent(hash=hash):
             logger.info('moved finished torrent "%s" to %s' % (torrent.name, dst))
         update_transfer(hash)
+        return
 
-    elif settings.DELTA_TORRENT_ACTIVE:
+    torrent_settings = Settings.get_settings('torrent')
+    now = datetime.utcnow()
+
+    inactive_delta = torrent_settings['inactive_delta']
+    if inactive_delta:
         date = torrent.date_active or torrent.date_added
-        if date < datetime.utcnow() - timedelta(hours=settings.DELTA_TORRENT_ACTIVE):
-            if client.remove_torrent(hash=hash, delete_data=True):
-                logger.debug('removed inactive torrent "%s": no activity since %s' % (torrent.name, date))
+        if date < now - timedelta(hours=inactive_delta) \
+                and client.remove_torrent(hash=hash, delete_data=True):
+            logger.debug('removed inactive torrent "%s": no activity since %s' % (torrent.name, date))
+            return
 
-    elif settings.DELTA_TORRENT_ADDED \
-            and torrent.date_added < datetime.utcnow() - timedelta(hours=settings.DELTA_TORRENT_ADDED):
-        if client.remove_torrent(hash=hash, delete_data=True):
-            logger.debug('removed obsolete torrent "%s": added %s' % (torrent.name, torrent.date_added))
+    added_delta = torrent_settings['added_delta']
+    if added_delta:
+        date = torrent.date_added
+        if date < now - timedelta(hours=added_delta) \
+                and client.remove_torrent(hash=hash, delete_data=True):
+            logger.debug('removed obsolete torrent "%s": added %s' % (torrent.name, date))
 
 @loop(10)
 @timeout(minutes=30)
@@ -85,13 +95,14 @@ def run():
             transfer['progress'] = torrent.progress
         Transfer.save(transfer, safe=True)
 
+    default_dir = Settings.get_settings('paths')['torrent_default']
     for torrent in client.iter_torrents():
         transfer = Transfer.find_one({'info.hash': torrent.hash},
                 sort=[('created', DESCENDING)])
         if not transfer or (transfer['finished'] \
                 and torrent.date_added > transfer['finished']):
             now = datetime.utcnow()
-            Transfer.add(torrent.magnet_url, settings.DEFAULT_TORRENT_DST,
+            Transfer.add(torrent.magnet_url, default_dir,
                     type='torrent', added=now, started=now,
                     info={'hash': torrent.hash})
         elif transfer['finished']:

@@ -8,6 +8,31 @@ from transfer.utils.db import connect, Model
 from transfer.utils.utils import get_transfer_type
 
 
+DEFAULT_SETTINGS = {
+    'general': {
+        'max_tries': 3,
+        'retry_delta': 60,    # seconds
+        },
+    'paths': {
+        'tmp': '/tmp',
+        'torrent_default': '/home/user/Downloads',
+        'invalid': '/home/user/Downloads/invalid',
+        },
+    'transmission': {
+        'host': 'localhost',
+        'port': 9091,
+        'username': '',
+        'password': '',
+        },
+    'torrent': {
+        'inactive_delta': 24 * 4,   # hours
+        'added_delta': 24 * 15,   # hours
+        },
+    'rsync': {
+        'default_args': '-ax --ignore-errors',
+        },
+    }
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 connect(settings.DB_NAME)
@@ -48,6 +73,31 @@ class Transfer(Model):
     def cancel(cls, id):
         cls.update({'_id': id},
                 {'$set': {'finished': datetime.utcnow()}}, safe=True)
+
+
+class Settings(Model):
+    COL = 'settings'
+
+    @classmethod
+    def get_settings(cls, section, key=None, default=None):
+        res = cls.find_one({'section': section}) or {}
+        settings = res.get('settings', DEFAULT_SETTINGS.get(section, {}))
+        return settings.get(key, default) if key else settings
+
+    @classmethod
+    def set_setting(cls, section, key, value):
+        cls.update({'section': section},
+                {'$set': {'section': section, 'settings.%s' % key: value}},
+                upsert=True)
+
+    @classmethod
+    def set_settings(cls, section, settings, overwrite=False):
+        doc = {
+            'section': section,
+            'settings': settings,
+            }
+        cls.update({'section': section},
+                doc if overwrite else {'$set': doc}, upsert=True)
 
 
 def get_factory():

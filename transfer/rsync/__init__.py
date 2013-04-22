@@ -2,7 +2,7 @@ import logging
 
 from systools.network.ssh import Host
 
-from transfer import settings
+from transfer import settings, Settings
 from transfer.utils.utils import parse_uri
 
 
@@ -19,6 +19,7 @@ class RsyncTransfer(object):
         self.name = None
         self.transferred = 0
         self.last_callback = 0
+        self.default_args = Settings.get_settings('rsync')['default_args']
 
     def _get_client(self, info):
         try:
@@ -50,8 +51,8 @@ class RsyncTransfer(object):
             ssh_password = self.dst_host.password
 
         cmd = ['rsync']
-        if settings.DEFAULT_RSYNC_ARGS:
-            cmd += settings.DEFAULT_RSYNC_ARGS
+        if self.default_args:
+            cmd += self.default_args.split(' ')
         if exclude:
             cmd += ['--exclude=%s' % e for e in exclude]
         if delete:

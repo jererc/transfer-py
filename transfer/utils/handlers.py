@@ -3,7 +3,7 @@ from datetime import datetime
 import time
 import logging
 
-from transfer import settings, Transfer, get_callable
+from transfer import settings, Transfer, Settings, get_callable
 
 from transfer.http import HttpTransfer
 from transfer.rsync import RsyncTransfer, RsyncNotFound
@@ -28,7 +28,7 @@ class Http(HttpTransfer):
             return
 
         now = time.time()
-        if now - self.last_callback < settings.PROGRESS_CALLBACK_INTERVAL:
+        if now - self.last_callback < settings.PROGRESS_CALLBACK_DELTA:
             return
         self.last_callback = now
 
@@ -52,7 +52,8 @@ class Http(HttpTransfer):
         if not isinstance(src, (tuple, list)):
             src = [src]
 
-        res = self.process(src, dst, settings.DEFAULT_TEMP_DIR)
+        tmp_dir = Settings.get_settings('paths')['tmp']
+        res = self.process(src, dst, tmp_dir)
         if res:
             self.transfer['info']['files'] = res
             self.transfer['transferred'] = self.total
@@ -100,7 +101,7 @@ class Sftp(SftpTransfer):
             sys.exit(1)     # to avoid zombies
 
         now = time.time()
-        if now - self.last_callback < settings.PROGRESS_CALLBACK_INTERVAL:
+        if now - self.last_callback < settings.PROGRESS_CALLBACK_DELTA:
             return
         self.last_callback = now
         self.transfer['transferred'] = self.transferred

@@ -33,7 +33,7 @@ class HttpTransfer(object):
 
     def _callback(self, download_total, downloaded, upload_total, uploaded):
         now = time.time()
-        if now - self.last_callback < settings.PROGRESS_CALLBACK_INTERVAL:
+        if now - self.last_callback < settings.PROGRESS_CALLBACK_DELTA:
             return
         self.last_callback = now
         self.transferred_current = downloaded or uploaded
