@@ -1,7 +1,6 @@
 from systools.system import webapp
 
 from transfer.apps import app
-
 from transfer import settings
 
 

@@ -3,35 +3,25 @@ import sys
 import logging
 from logging.handlers import RotatingFileHandler
 
-from systools.system import popen, get_package_modules
+from systools.system import check_commands, get_package_modules
 
 from tracy import DbHandler
 
 from transfer import settings, get_factory, Transfer
 
 
+CMDS = ['rsync', 'unzip', 'unrar']
 WORKERS_DIR = 'workers'
-CMDS = ['mongod', 'transmission-daemon', 'rsync', 'unzip', 'unrar']
 
+logging.basicConfig(level=logging.DEBUG)
 
-def check_requirements():
-    res = True
-    for cmd in CMDS:
-        if popen('which %s' % cmd)[-1] != 0:
-            res = False
-            print '%s is missing' % cmd
-
-    return res
 
 def clean_aborted():
-    Transfer.update({
-            'finished': None,
-            'type': {'$nin': ['torrent']},
-            },
+    Transfer.update({'finished': None, 'queued': None},
             {'$set': {'started': None}}, multi=True, safe=True)
 
 def main():
-    if not check_requirements():
+    if not check_commands(CMDS):
         sys.exit(1)
 
     clean_aborted()

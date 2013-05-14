@@ -11,13 +11,16 @@ from filetools import media
 from filetools.title import clean
 from filetools.download import check_download_file
 
-from transfer.torrent.exceptions import TorrentExists, TorrentError
-
 
 RE_HASH = re.compile(r'\bbtih:(.*?)\W', re.I)
 RE_DUPLICATE = re.compile('duplicate torrent', re.I)
 
 logger = logging.getLogger(__name__)
+
+
+class TransmissionError(Exception): pass
+class TorrentError(Exception): pass
+class TorrentExists(Exception): pass
 
 
 class Transmission(object):
@@ -27,11 +30,9 @@ class Transmission(object):
         try:
             self.client = transmissionrpc.Client(host,
                     port=port, user=username, password=password)
-            self.logged = True
             self.download_dir = self.client.get_session().download_dir
         except Exception, e:
-            self.logged = False
-            logger.error('failed to connect to transmission rpc server %s:%s: %s' % (host, port, str(e)))
+            raise TransmissionError('failed to connect to transmission rpc server %s:%s: %s' % (host, port, str(e)))
 
     def add_torrent(self, url, delete_torrent=True):
         try:
@@ -44,7 +45,10 @@ class Transmission(object):
         if os.path.isfile(url) and delete_torrent:
             media.remove_file(url)
 
-        return self.get_torrent(hash=get_hash(url))
+        torrent = self.get_torrent(hash=get_hash(url))
+        if torrent:
+            return torrent
+        raise TorrentError('failed to add torrent %s' % url)
 
     def _get_torrent(self, torrent):
         return dotdict({

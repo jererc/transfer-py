@@ -52,11 +52,14 @@ def run():
                 args=(transfer['_id'], transfer['type']),
                 timeout=settings.PROCESS_TIMEOUT)
 
-        transfer['added'] = datetime.utcnow()
-        transfer['started'] = datetime.utcnow()
-        transfer['finished'] = None
-        transfer['tries'] += 1
-        Transfer.save(transfer, safe=True)
+        Transfer.update({'_id': transfer['_id']}, {
+                '$set': {
+                    'added': datetime.utcnow(),
+                    'started': datetime.utcnow(),
+                    'finished': None,
+                    },
+                '$inc': {'tries': 1},
+                }, safe=True)
 
         add_running(running, transfer['type'])
 

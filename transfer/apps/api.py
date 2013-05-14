@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 def check_status():
     return jsonify(result='transfer')
 
-@app.route('/transfers/create', methods=['POST', 'OPTIONS'])
+@app.route('/transfer/create', methods=['POST', 'OPTIONS'])
 @crossdomain(origin='*')
 def create_transfer():
     data = request.json
@@ -36,10 +36,10 @@ def create_transfer():
     return jsonify(result=True)
 
 def _get_transfer(transfer):
-    info = transfer.get('info', {})
+    info = transfer.get('info') or {}
     return {
         'id': transfer['_id'],
-        'name': info['name'],
+        'name': info.get('name', 'N/A'),
         'type': transfer['type'],
         'src': transfer['src'],
         'dst': transfer['dst'],
@@ -47,15 +47,16 @@ def _get_transfer(transfer):
         'transferred': transfer.get('transferred'),
         'transfer_rate': info.get('transfer_rate'),
         'progress': transfer.get('progress'),
+        'tries': transfer['tries'],
         }
 
-@app.route('/transfers/list', methods=['GET'])
+@app.route('/transfer/list', methods=['GET'])
 @crossdomain(origin='*')
 def list_transfers():
     items = [_get_transfer(t) for t in Transfer.find({'finished': None})]
     return serialize({'result': items})
 
-@app.route('/transfers/remove', methods=['POST', 'OPTIONS'])
+@app.route('/transfer/remove', methods=['POST', 'OPTIONS'])
 @crossdomain(origin='*')
 def remove_transfer():
     data = request.json
@@ -69,7 +70,7 @@ def remove_transfer():
 def list_settings():
     settings = {}
     for section in ('general', 'paths', 'transmission',
-            'torrent', 'rsync'):
+            'torrent', 'sabnzbd', 'rsync'):
         settings[section] = Settings.get_settings(section)
     return serialize({'result': settings})
 

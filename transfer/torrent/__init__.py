@@ -1,9 +1,8 @@
 from transfer import Settings
-from transfer.torrent.transmission import Transmission
+from transfer.torrent.transmission import (Transmission, TransmissionError,
+        TorrentError, TorrentExists)
 
 
-def get_client():
+def get_torrent_client():
     info = Settings.get_settings('transmission')
-    client = Transmission(**info)
-    if client.logged:
-        return client
+    return Transmission(**info)

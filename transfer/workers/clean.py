@@ -4,7 +4,7 @@ import logging
 from systools.system import loop, timeout, timer
 
 from transfer import Transfer
-from transfer.torrent import get_client
+from transfer.torrent import get_torrent_client, TransmissionError
 
 
 DELTA_OBSOLETE = timedelta(days=180)
@@ -19,7 +19,7 @@ def run():
     Transfer.remove({'finished': {
             '$lt': datetime.utcnow() - DELTA_OBSOLETE,
             }}, safe=True)
-
-    client = get_client()
-    if client:
-        client.clean_download_directory()
+    try:
+        get_torrent_client().clean_download_directory()
+    except TransmissionError, e:
+        logger.error('failed to get torrent client: %s' % str(e))

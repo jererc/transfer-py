@@ -14,9 +14,14 @@ DEFAULT_SETTINGS = {
         'retry_delta': 60,    # seconds
         },
     'paths': {
-        'tmp': '/tmp',
-        'torrent_default': '/home/user/Downloads',
+        'default': '/home/user/Downloads',
         'invalid': '/home/user/Downloads/invalid',
+        'tmp': '/tmp',
+        },
+    'sabnzbd': {
+        'host': 'localhost',
+        'port': 8080,
+        'api_key': '',
         },
     'transmission': {
         'host': 'localhost',
@@ -33,7 +38,6 @@ DEFAULT_SETTINGS = {
         },
     }
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 connect(settings.DB_NAME)
 
@@ -45,11 +49,13 @@ class Transfer(Model):
     COL = 'transfers'
 
     @classmethod
-    def add(cls, src, dst, type=None, **parameters):
+    def add(cls, src, dst=None, type=None, **parameters):
+        if not dst:
+            dst = Settings.get_settings('paths')['default']
         if not type:
             type = get_transfer_type(src, dst)
         if not type or not get_callable(type):
-            raise InvalidTransfer('unhandled transfer type for %s to %s' % (src, dst))
+            raise InvalidTransfer('unhandled transfer type %s for %s to %s' % (type, src, dst))
 
         doc = {
             'src': src,
@@ -61,6 +67,7 @@ class Transfer(Model):
             'created': datetime.utcnow(),
             'added': None,
             'started': None,
+            'queued': None,
             'finished': None,
             'tries': 0,
             'info': {},
