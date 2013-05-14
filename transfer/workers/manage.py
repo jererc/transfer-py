@@ -10,7 +10,7 @@ from filetools import media
 
 from transfer import settings, Transfer, Settings, get_factory
 from transfer.torrent import get_torrent_client, TransmissionError, TorrentError
-from transfer.nzb import get_nzb_client, ApiError
+from transfer.nzb import get_nzb_client, SabnzbdError
 
 
 TIMEOUT_MANAGE = 3600   # seconds
@@ -34,7 +34,7 @@ def manage_nzb(nzb_id, dst):
         elif media.move_file(nzb['storage'], dst):
             client.remove_nzb(nzb['nzo_id'], history=True)
             logger.info('moved finished nzb %s to %s' % (nzb['storage'], dst))
-    except ApiError, e:
+    except SabnzbdError, e:
         logger.error('nzb client error: %s' % str(e))
 
 def get_nzb_transfer(id):
@@ -206,7 +206,7 @@ def manage_torrents():
 def run():
     try:
         manage_nzbs()
-    except ApiError, e:
+    except SabnzbdError, e:
         logger.error('nzb client error: %s' % str(e))
 
     try:

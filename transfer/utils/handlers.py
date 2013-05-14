@@ -16,7 +16,7 @@ from transfer.http import HttpTransfer
 from transfer.rsync import RsyncTransfer, RsyncNotFound
 from transfer.sftp import SftpTransfer
 from transfer.ftp import FtpTransfer
-from transfer.nzb import get_nzb_client, ApiError
+from transfer.nzb import get_nzb_client, SabnzbdError
 from transfer.torrent import (get_torrent_client, TransmissionError,
         TorrentError, TorrentExists)
 
@@ -233,7 +233,7 @@ class Binsearch(object):
                             'info.nzo_id': nzb_id,
                             'info.name': name,
                         }}, safe=True)
-            except ApiError, e:
+            except SabnzbdError, e:
                 Transfer.update({'_id': transfer['_id']}, {'$set': {
                         'started': None,
                         'tries': 0,

@@ -1,4 +1,4 @@
-from sabnzbdrpc import Sabnzbd, ApiError
+from sabnzbdrpc import Sabnzbd, SabnzbdError
 
 from transfer import Settings
 
