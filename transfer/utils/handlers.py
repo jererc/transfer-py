@@ -5,8 +5,8 @@ import time
 from urlparse import urlparse, parse_qs
 import logging
 
-from mediacore.web.search.plugins.binsearch import get_nzb, BinsearchException
-from mediacore.web.search.plugins.filestube import get_download_urls, FilestubeException
+from mediacore.web.search.plugins.binsearch import get_nzb, BinsearchError
+from mediacore.web.search.plugins.filestube import get_download_urls, FilestubeError
 
 from filetools.title import clean
 
@@ -84,7 +84,7 @@ class Filestube(Http):
 
         try:
             src = get_download_urls(self.transfer['src'])
-        except FilestubeException, e:
+        except FilestubeError, e:
             logger.error('failed to get filestube urls for %s: %s' % (self.transfer['src'], str(e)))
             return
 
@@ -214,7 +214,7 @@ class Binsearch(object):
 
         try:
             nzb_data = get_nzb(transfer['src'])
-        except BinsearchException, e:
+        except BinsearchError, e:
             Transfer.update({'_id': transfer['_id']},
                     {'$set': {'started': None}}, safe=True)
             logger.error('failed to get nzb data from %s: %s' % (transfer['src'], str(e)))
