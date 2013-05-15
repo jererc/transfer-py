@@ -28,12 +28,18 @@ def manage_nzb(nzb_id, dst):
         nzb = client.get_nzb(nzb_id, history=True)
         if not nzb or not nzb['storage']:
             return
+
         if not os.path.exists(nzb['storage']):
             client.remove_nzb(nzb['nzo_id'], history=True, delete_files=True)
             logger.error('failed to find finished nzb directory "%s" (%s)' % (nzb['storage'], repr(nzb)))
-        elif media.move_file(nzb['storage'], dst):
+            media.remove_file(nzb['path'])
+            logger.error('removed nzb path "%s" (%s)' % (nzb['path'], repr(nzb)))
+            return
+
+        if media.move_file(nzb['storage'], dst):
             client.remove_nzb(nzb['nzo_id'], history=True)
             logger.info('moved finished nzb %s to %s' % (nzb['storage'], dst))
+
     except SabnzbdError, e:
         logger.error('nzb client error: %s' % str(e))
 
