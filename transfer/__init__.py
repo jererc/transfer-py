@@ -22,6 +22,7 @@ DEFAULT_SETTINGS = {
         'host': 'localhost',
         'port': 8080,
         'api_key': '',
+        'base_path': '/home/user',
         },
     'transmission': {
         'host': 'localhost',

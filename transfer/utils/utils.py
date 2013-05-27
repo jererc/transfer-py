@@ -1,7 +1,4 @@
 from urlparse import urlparse
-import tempfile
-import shutil
-from contextlib import contextmanager
 
 
 class UriError(Exception): pass
@@ -55,11 +52,3 @@ def parse_uri(uri):
             raise UriError('failed to get port from "%s"' % uri)
 
     return info
-
-@contextmanager
-def mkdtemp(path):
-    temp_dir = tempfile.mkdtemp(prefix='transfer_', dir=path)
-    try:
-        yield temp_dir
-    finally:
-        shutil.rmtree(temp_dir)

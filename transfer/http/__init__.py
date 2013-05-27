@@ -10,10 +10,9 @@ import logging
 import pycurl
 
 from filetools.title import clean
-from filetools.media import move_file
+from filetools.media import move_file, mkdtemp
 
 from transfer import settings
-from transfer.utils.utils import mkdtemp
 
 
 RE_CONTENT_FILENAME = re.compile(r'filename="(.*?)"', re.I)
@@ -92,7 +91,7 @@ class HttpTransfer(object):
         self.total = sum([d['size'] for d in info])
         temp_files = []
         dst_files = []
-        with mkdtemp(temp_dir) as temp_dst:
+        with mkdtemp(temp_dir, prefix='transfer_') as temp_dst:
             for data in info:
                 self.name = data['filename']
                 temp_file = os.path.join(temp_dst, data['filename'])
@@ -133,7 +132,7 @@ def _get_size(remote):
 def get_url_info(url):
     try:
         remote = urlopen(url)
-    except URLError, e:
+    except Exception, e:
         logger.error('failed to open %s: %s' % (url, str(e)))
         return
     if remote:

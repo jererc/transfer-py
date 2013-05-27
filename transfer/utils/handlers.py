@@ -9,6 +9,7 @@ from mediacore.web.search.plugins.binsearch import get_nzb, BinsearchError
 from mediacore.web.search.plugins.filestube import get_download_urls, FilestubeError
 
 from filetools.title import clean
+from filetools.media import mkdtemp
 
 from transfer import settings, Transfer, Settings, get_callable
 
@@ -19,8 +20,6 @@ from transfer.ftp import FtpTransfer
 from transfer.nzb import get_nzb_client, SabnzbdError
 from transfer.torrent import (get_torrent_client, TransmissionError,
         TorrentError, TorrentExists)
-
-from transfer.utils.utils import mkdtemp
 
 
 logger = logging.getLogger(__name__)
@@ -221,7 +220,7 @@ class Binsearch(object):
             return
 
         temp_dir = Settings.get_settings('paths')['tmp']
-        with mkdtemp(temp_dir) as temp_dst:
+        with mkdtemp(temp_dir, prefix='transfer_') as temp_dst:
             temp_file = os.path.join(temp_dst, '%s.nzb' % name)
             with open(temp_file, 'wb') as fd:
                 fd.write(nzb_data)
