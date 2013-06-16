@@ -53,6 +53,8 @@ class Transfer(Model):
     def add(cls, src, dst=None, type=None, **parameters):
         if not dst:
             dst = Settings.get_settings('paths')['default']
+            if not dst:
+                raise InvalidTransfer('missing destination for %s' % src)
         if not type:
             type = get_transfer_type(src, dst)
         if not type or not get_callable(type):

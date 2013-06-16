@@ -25,12 +25,9 @@ def create_transfer():
     src = data.get('src')
     if not src:
         return jsonify(error='missing src')
-    dst = data.get('dst')
-    if not dst:
-        return jsonify(error='missing dst')
 
     try:
-        Transfer.add(src, dst, request.json.get('type'))
+        Transfer.add(src, data.get('dst'), data.get('type'))
     except Exception, e:
         return jsonify(error=str(e))
     return jsonify(result=True)
