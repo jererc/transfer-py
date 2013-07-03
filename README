@@ -1,6 +1,6 @@
 Transfer.
 
-Handles http, ftp, sftp, rsync and torrent.
+Handles http, ftp, sftp, rsync, torrent and binsearch.
 
 
 Start the daemon:
