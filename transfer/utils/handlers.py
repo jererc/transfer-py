@@ -153,11 +153,8 @@ class Sftp(SftpTransfer):
         src = self.transfer['src']
         dst = self.transfer['dst']
         parameters = self.transfer.get('parameters', {})
-        exclude = parameters.get('exclusions')
-        if exclude:
-            exclude = [r'^%s' % e for e in exclude]
         try:
-            self.process(src, dst, exclude=exclude,
+            self.process(src, dst, exclude=parameters.get('exclusions'),
                     delete=parameters.get('delete', True))
             self.transfer['transferred'] = self.transferred
             self.transfer['progress'] = 100
@@ -179,11 +176,8 @@ class Ftp(FtpTransfer):
         src = self.transfer['src']
         dst = self.transfer['dst']
         parameters = self.transfer.get('parameters', {})
-        exclude = parameters.get('exclusions')
-        if exclude:
-            exclude = [r'^%s' % e for e in exclude]
         try:
-            self.process(src, dst, exclude=exclude,
+            self.process(src, dst, exclude=parameters.get('exclusions'),
                     delete=parameters.get('delete', True))
             self.transfer['transferred'] = self.transferred
             self.transfer['progress'] = 100
