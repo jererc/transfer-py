@@ -87,7 +87,7 @@ def manage_nzbs():
         transfer = get_nzb_transfer(nzb['nzo_id'])
         if not transfer:
             now = datetime.utcnow()
-            Transfer.add(nzb['filename'], paths['default'],
+            Transfer.add(nzb['filename'], str(paths['default']),
                     type='binsearch', added=now, started=now, queued=now,
                     info={'nzo_id': nzb['nzo_id']})
         elif transfer['finished']:
@@ -98,9 +98,9 @@ def manage_nzbs():
     for nzb in client.list_nzbs(history=True):
         transfer = get_nzb_transfer(nzb['nzo_id'])
         if nzb['status'] == 'Completed':
-            dst = transfer['dst'] if transfer else paths['default']
+            dst = transfer['dst'] if transfer else str(paths['default'])
         elif nzb['status'] == 'Failed':
-            dst = paths['invalid']
+            dst = str(paths['invalid'])
         else:
             continue
         target = '%s.workers.manage.manage_nzb' % settings.PACKAGE_NAME
@@ -122,7 +122,7 @@ def manage_torrent(hash, dst):
 
         if not client.check_torrent_files(torrent,
                 check_unfinished=settings.CHECK_UNFINISHED_TORRENTS):
-            invalid_dir = Settings.get_settings('paths')['invalid']
+            invalid_dir = str(Settings.get_settings('paths')['invalid'])
             if torrent.progress == 100 and not client.move_files(torrent, invalid_dir):
                 return
             if client.remove_torrent(hash=hash, delete_data=True):
@@ -187,7 +187,7 @@ def manage_torrents():
             transfer['progress'] = torrent.progress
         Transfer.save(transfer, safe=True)
 
-    default_dir = Settings.get_settings('paths')['default']
+    default_dir = str(Settings.get_settings('paths')['default'])
     for torrent in client.iter_torrents():
         transfer = Transfer.find_one({'info.hash': torrent.hash},
                 sort=[('created', DESCENDING)])

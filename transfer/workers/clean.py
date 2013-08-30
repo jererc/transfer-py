@@ -25,13 +25,13 @@ def clean_nzbs():
             return
 
         config = client.get_config()
-        base_path = Settings.get_settings('sabnzbd')['base_path']
+        base_path = str(Settings.get_settings('sabnzbd')['base_path'])
         for name in ('download_dir', 'complete_dir'):
             path = config['misc'].get(name)
             if not path:
                 logger.error('failed to get sabnzbd %s' % name)
                 continue
-            path = os.path.join(base_path, path)
+            path = str(os.path.join(base_path, path))
             if not os.path.exists(path):
                 logger.error('sabnzbd %s path %s does not exist' % (name, path))
                 continue
