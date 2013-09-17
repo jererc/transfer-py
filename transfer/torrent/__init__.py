@@ -4,5 +4,6 @@ from transfer.torrent.transmission import (Transmission, TransmissionError,
 
 
 def get_torrent_client():
-    info = Settings.get_settings('transmission')
-    return Transmission(**info)
+    settings = Settings.get_settings('transmission')
+    return Transmission(host=settings['host'], port=settings['port'],
+            username=settings['username'], password=settings['password'])

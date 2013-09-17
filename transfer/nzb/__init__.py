@@ -4,5 +4,6 @@ from transfer import Settings
 
 
 def get_nzb_client():
-    info = Settings.get_settings('sabnzbd')
-    return Sabnzbd(info['host'], info['port'], info['api_key'])
+    settings = Settings.get_settings('sabnzbd')
+    return Sabnzbd(host=settings['host'], port=settings['port'],
+            api_key=settings['api_key'])

@@ -19,97 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 #
-# NZB
-#
-@timer(30)
-def manage_nzb(nzb_id, dst):
-    try:
-        client = get_nzb_client()
-        nzb = client.get_nzb(nzb_id, history=True)
-        if not nzb or not nzb['storage']:
-            return
-
-        if not os.path.exists(nzb['storage']):
-            client.remove_nzb(nzb['nzo_id'], history=True, delete_files=True)
-            logger.error('failed to find finished nzb directory "%s" (%s)' % (nzb['storage'], repr(nzb)))
-            media.remove_file(nzb['path'])
-            logger.error('removed nzb path "%s" (%s)' % (nzb['path'], repr(nzb)))
-            return
-
-        if media.move_file(nzb['storage'], dst):
-            client.remove_nzb(nzb['nzo_id'], history=True)
-            logger.info('moved finished nzb %s to %s' % (nzb['storage'], dst))
-
-    except SabnzbdError, e:
-        logger.error('nzb client error: %s' % str(e))
-
-def get_nzb_transfer(id):
-    return Transfer.find_one({'info.nzo_id': id},
-            sort=[('created', DESCENDING)])
-
-def get_float(val):
-    try:
-        return float(val)
-    except ValueError:
-        return 0
-
-def manage_nzbs():
-    client = get_nzb_client()
-
-    for transfer in Transfer.find({
-            'started': {'$ne': None},
-            'finished': None,
-            'type': 'binsearch',
-            }):
-        nzb_id = transfer['info'].get('nzo_id')
-        if not nzb_id:
-            continue
-        info = client.get_nzb(nzb_id)
-        if not info:
-            Transfer.update({'_id': transfer['_id']},
-                    {'$set': {'finished': datetime.utcnow()}},
-                    safe=True)
-        else:
-            info['name'] = info.get('filename', transfer['info'].get('name'))
-            total = get_float(info.get('mb', 0)) * 1024 ** 2
-            Transfer.update({'_id': transfer['_id']},
-                    {'$set': {
-                        'total': total,
-                        'transferred': total - get_float(info.get('mbleft', 0)) * 1024 ** 2,
-                        'progress': get_float(info.get('percentage', 0)),
-                        'info': info,
-                    }}, safe=True)
-
-    paths = Settings.get_settings('paths')
-
-    # Manage queued nzbs
-    for nzb in client.list_nzbs():
-        transfer = get_nzb_transfer(nzb['nzo_id'])
-        if not transfer:
-            now = datetime.utcnow()
-            Transfer.add(nzb['filename'], str(paths['default']),
-                    type='binsearch', added=now, started=now, queued=now,
-                    info={'nzo_id': nzb['nzo_id']})
-        elif transfer['finished']:
-            client.remove_nzb(nzb['nzo_id'])
-            logger.info('removed finished nzb "%s" (%s)' % (nzb['filename'], nzb['nzo_id']))
-
-    # Manage finished nzbs
-    for nzb in client.list_nzbs(history=True):
-        transfer = get_nzb_transfer(nzb['nzo_id'])
-        if nzb['status'] == 'Completed':
-            dst = transfer['dst'] if transfer else str(paths['default'])
-        elif nzb['status'] == 'Failed':
-            dst = str(paths['invalid'])
-        else:
-            continue
-        target = '%s.workers.manage.manage_nzb' % settings.PACKAGE_NAME
-        get_factory().add(target=target,
-                kwargs={'nzb_id': nzb['nzo_id'], 'dst': dst},
-                timeout=TIMEOUT_MANAGE)
-
-
-#
 # Torrent
 #
 @timer(30)
@@ -206,16 +115,109 @@ def manage_torrents():
                     kwargs={'hash': torrent.hash, 'dst': transfer['dst']},
                     timeout=TIMEOUT_MANAGE)
 
+
+#
+# NZB
+#
+@timer(30)
+def manage_nzb(nzb_id, dst):
+    try:
+        client = get_nzb_client()
+        nzb = client.get_nzb(nzb_id, history=True)
+        if not nzb or not nzb['storage']:
+            return
+
+        if not os.path.exists(nzb['storage']):
+            client.remove_nzb(nzb['nzo_id'], history=True, delete_files=True)
+            logger.error('failed to find finished nzb directory "%s" (%s)' % (nzb['storage'], repr(nzb)))
+            media.remove_file(nzb['path'])
+            logger.error('removed nzb path "%s" (%s)' % (nzb['path'], repr(nzb)))
+            return
+
+        if media.move_file(nzb['storage'], dst):
+            client.remove_nzb(nzb['nzo_id'], history=True)
+            logger.info('moved finished nzb %s to %s' % (nzb['storage'], dst))
+
+    except SabnzbdError, e:
+        logger.error('nzb client error: %s' % str(e))
+
+def get_nzb_transfer(id):
+    return Transfer.find_one({'info.nzo_id': id},
+            sort=[('created', DESCENDING)])
+
+def get_float(val):
+    try:
+        return float(val)
+    except ValueError:
+        return 0
+
+def manage_nzbs():
+    client = get_nzb_client()
+
+    for transfer in Transfer.find({
+            'started': {'$ne': None},
+            'finished': None,
+            'type': 'binsearch',
+            }):
+        nzb_id = transfer['info'].get('nzo_id')
+        if not nzb_id:
+            continue
+        info = client.get_nzb(nzb_id)
+        if not info:
+            Transfer.update({'_id': transfer['_id']},
+                    {'$set': {'finished': datetime.utcnow()}},
+                    safe=True)
+        else:
+            info['name'] = info.get('filename', transfer['info'].get('name'))
+            total = get_float(info.get('mb', 0)) * 1024 ** 2
+            Transfer.update({'_id': transfer['_id']},
+                    {'$set': {
+                        'total': total,
+                        'transferred': total - get_float(info.get('mbleft', 0)) * 1024 ** 2,
+                        'progress': get_float(info.get('percentage', 0)),
+                        'info': info,
+                    }}, safe=True)
+
+    paths = Settings.get_settings('paths')
+
+    # Manage queued nzbs
+    for nzb in client.list_nzbs():
+        transfer = get_nzb_transfer(nzb['nzo_id'])
+        if not transfer:
+            now = datetime.utcnow()
+            Transfer.add(nzb['filename'], str(paths['default']),
+                    type='binsearch', added=now, started=now, queued=now,
+                    info={'nzo_id': nzb['nzo_id']})
+        elif transfer['finished']:
+            client.remove_nzb(nzb['nzo_id'])
+            logger.info('removed finished nzb "%s" (%s)' % (nzb['filename'], nzb['nzo_id']))
+
+    # Manage finished nzbs
+    for nzb in client.list_nzbs(history=True):
+        transfer = get_nzb_transfer(nzb['nzo_id'])
+        if nzb['status'] == 'Completed':
+            dst = transfer['dst'] if transfer else str(paths['default'])
+        elif nzb['status'] == 'Failed':
+            dst = str(paths['invalid'])
+        else:
+            continue
+        target = '%s.workers.manage.manage_nzb' % settings.PACKAGE_NAME
+        get_factory().add(target=target,
+                kwargs={'nzb_id': nzb['nzo_id'], 'dst': dst},
+                timeout=TIMEOUT_MANAGE)
+
 @loop(10)
 @timeout(minutes=30)
 @timer()
 def run():
-    try:
-        manage_nzbs()
-    except SabnzbdError, e:
-        logger.error('nzb client error: %s' % str(e))
+    if Settings.get_settings('transmission').get('active', True):
+        try:
+            manage_torrents()
+        except TransmissionError, e:
+            logger.error('torrent client error: %s' % str(e))
 
-    try:
-        manage_torrents()
-    except TransmissionError, e:
-        logger.error('torrent client error: %s' % str(e))
+    if Settings.get_settings('sabnzbd').get('active', True):
+        try:
+            manage_nzbs()
+        except SabnzbdError, e:
+            logger.error('nzb client error: %s' % str(e))

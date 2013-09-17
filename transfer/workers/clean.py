@@ -8,14 +8,20 @@ from systools.system import loop, timeout, timer
 from filetools.media import remove_file
 
 from transfer import Transfer, Settings
-from transfer.nzb import get_nzb_client, SabnzbdError
 from transfer.torrent import get_torrent_client, TransmissionError
+from transfer.nzb import get_nzb_client, SabnzbdError
 
 
 DELTA_OBSOLETE = timedelta(days=180)
 
 logger = logging.getLogger(__name__)
 
+
+def clean_torrents():
+    try:
+        get_torrent_client().clean_download_directory()
+    except TransmissionError, e:
+        logger.error('failed to get torrent client: %s' % str(e))
 
 def clean_nzbs():
     try:
@@ -43,12 +49,6 @@ def clean_nzbs():
     except SabnzbdError, e:
         logger.error('nzb client error: %s' % str(e))
 
-def clean_torrents():
-    try:
-        get_torrent_client().clean_download_directory()
-    except TransmissionError, e:
-        logger.error('failed to get torrent client: %s' % str(e))
-
 @loop(hours=6)
 @timeout(minutes=30)
 @timer()
@@ -57,5 +57,8 @@ def run():
             '$lt': datetime.utcnow() - DELTA_OBSOLETE,
             }}, safe=True)
 
-    clean_nzbs()
-    clean_torrents()
+    if Settings.get_settings('transmission').get('active', True):
+        clean_torrents()
+
+    if Settings.get_settings('sabnzbd').get('active', True):
+        clean_nzbs()

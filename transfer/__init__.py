@@ -18,17 +18,19 @@ DEFAULT_SETTINGS = {
         'invalid': '/home/user/Downloads/invalid',
         'tmp': '/tmp',
         },
-    'sabnzbd': {
-        'host': 'localhost',
-        'port': 8080,
-        'api_key': '',
-        'base_path': '/home/user',
-        },
     'transmission': {
+        'active': True,
         'host': 'localhost',
         'port': 9091,
         'username': '',
         'password': '',
+        },
+    'sabnzbd': {
+        'active': True,
+        'host': 'localhost',
+        'port': 8080,
+        'api_key': '',
+        'base_path': '/home/user',
         },
     'torrent': {
         'inactive_delta': 24 * 4,   # hours
