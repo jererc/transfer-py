@@ -64,4 +64,4 @@ def run():
         add_running(running, transfer['type'])
 
         count_str = ' (#%s)' % transfer['tries'] if transfer['tries'] > 1 else ''
-        logger.info('started%s %s transfer %s to %s' % (count_str, transfer['type'], transfer['src'], transfer['dst']))
+        logger.info('started%s %s transfer %s to %s', count_str, transfer['type'], transfer['src'], transfer['dst'])

@@ -66,10 +66,10 @@ class Http(HttpTransfer):
             self.transfer['info']['files'] = res
             self.transfer['transferred'] = self.total
             self.transfer['progress'] = 100
-            logger.info('finished http transfer %s to %s' % (src, dst))
+            logger.info('finished http transfer %s to %s', src, dst)
         else:
             self.transfer['started'] = None
-            logger.error('failed to process http transfer %s to %s' % (src, dst))
+            logger.error('failed to process http transfer %s to %s', src, dst)
         self.transfer['finished'] = datetime.utcnow()
         Transfer.save(self.transfer, safe=True)
 
@@ -84,7 +84,7 @@ class Filestube(Http):
         try:
             src = get_download_urls(self.transfer['src'])
         except FilestubeError, e:
-            logger.error('failed to get filestube urls for %s: %s' % (self.transfer['src'], str(e)))
+            logger.error('failed to get filestube urls for %s: %s', self.transfer['src'], str(e))
             return
 
         dst = self.transfer['dst']
@@ -95,10 +95,10 @@ class Filestube(Http):
             self.transfer['info']['files'] = res
             self.transfer['transferred'] = self.total
             self.transfer['progress'] = 100
-            logger.info('finished http transfer %s to %s' % (src, dst))
+            logger.info('finished http transfer %s to %s', src, dst)
         else:
             self.transfer['started'] = None
-            logger.error('failed to process http transfer %s to %s' % (src, dst))
+            logger.error('failed to process http transfer %s to %s', src, dst)
         self.transfer['finished'] = datetime.utcnow()
         Transfer.save(self.transfer, safe=True)
 
@@ -117,12 +117,12 @@ class Rsync(RsyncTransfer):
             self.process(src, dst, exclude=parameters.get('exclusions'),
                     delete=parameters.get('delete', True))
             self.transfer['progress'] = 100
-            logger.info('finished rsync transfer %s to %s' % (src, dst))
+            logger.info('finished rsync transfer %s to %s', src, dst)
         except RsyncNotFound:   # sftp fallback
             return get_callable('sftp')(id)
         except Exception, e:
             self.transfer['started'] = None
-            logger.error('failed to process rsync transfer %s to %s: %s' % (src, dst, str(e)))
+            logger.error('failed to process rsync transfer %s to %s: %s', src, dst, str(e))
         self.transfer['finished'] = datetime.utcnow()
         Transfer.save(self.transfer, safe=True)
 
@@ -134,7 +134,7 @@ class Sftp(SftpTransfer):
                 '_id': self.transfer['_id'],
                 'finished': None,
                 }):
-            logger.info('aborted sftp transfer %s to %s' % (self.transfer['src'], self.transfer['dst']))
+            logger.info('aborted sftp transfer %s to %s', self.transfer['src'], self.transfer['dst'])
             sys.exit(1)     # to avoid zombies
 
         now = time.time()
@@ -158,10 +158,10 @@ class Sftp(SftpTransfer):
                     delete=parameters.get('delete', True))
             self.transfer['transferred'] = self.transferred
             self.transfer['progress'] = 100
-            logger.info('finished sftp transfer %s to %s' % (src, dst))
+            logger.info('finished sftp transfer %s to %s', src, dst)
         except Exception, e:
             self.transfer['started'] = None
-            logger.error('failed to process sftp transfer %s to %s: %s' % (src, dst, str(e)))
+            logger.error('failed to process sftp transfer %s to %s: %s', src, dst, str(e))
         self.transfer['finished'] = datetime.utcnow()
         Transfer.save(self.transfer, safe=True)
 
@@ -181,10 +181,10 @@ class Ftp(FtpTransfer):
                     delete=parameters.get('delete', True))
             self.transfer['transferred'] = self.transferred
             self.transfer['progress'] = 100
-            logger.info('finished ftp transfer %s to %s' % (src, dst))
+            logger.info('finished ftp transfer %s to %s', src, dst)
         except Exception, e:
             self.transfer['started'] = None
-            logger.error('failed to process ftp transfer %s to %s: %s' % (src, dst, str(e)))
+            logger.error('failed to process ftp transfer %s to %s: %s', src, dst, str(e))
         self.transfer['finished'] = datetime.utcnow()
         Transfer.save(self.transfer, safe=True)
 
@@ -202,7 +202,7 @@ class Binsearch(object):
         except KeyError:
             Transfer.update({'_id': transfer['_id']},
                     {'$set': {'finished': datetime.utcnow()}}, safe=True)
-            logger.error('failed to get nzb name from %s' % transfer['src'])
+            logger.error('failed to get nzb name from %s', transfer['src'])
             return
 
         try:
@@ -210,7 +210,7 @@ class Binsearch(object):
         except BinsearchError, e:
             Transfer.update({'_id': transfer['_id']},
                     {'$set': {'started': None}}, safe=True)
-            logger.error('failed to get nzb data from %s: %s' % (transfer['src'], str(e)))
+            logger.error('failed to get nzb data from %s: %s', transfer['src'], str(e))
             return
 
         temp_dir = Settings.get_settings('paths')['tmp']
@@ -231,7 +231,7 @@ class Binsearch(object):
                         'started': None,
                         'tries': 0,
                         }}, safe=True)
-                logger.error('failed to start nzb: %s' % str(e))
+                logger.error('failed to start nzb: %s', str(e))
 
 
 class Torrent(object):
@@ -252,10 +252,10 @@ class Torrent(object):
             Transfer.update({'_id': transfer['_id']},
                     {'$set': {'finished': datetime.utcnow()}},
                     safe=True)
-            logger.debug('failed to start torrent: %s' % str(e))
+            logger.debug('failed to start torrent: %s', str(e))
         except (TransmissionError, TorrentError), e:
             Transfer.update({'_id': transfer['_id']}, {'$set': {
                     'started': None,
                     'tries': 0,
                     }}, safe=True)
-            logger.error('failed to start torrent: %s' % str(e))
+            logger.error('failed to start torrent: %s', str(e))

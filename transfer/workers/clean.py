@@ -21,7 +21,7 @@ def clean_torrents():
     try:
         get_torrent_client().clean_download_directory()
     except TransmissionError, e:
-        logger.error('failed to get torrent client: %s' % str(e))
+        logger.error('failed to get torrent client: %s', str(e))
 
 def clean_nzbs():
     try:
@@ -35,19 +35,19 @@ def clean_nzbs():
         for name in ('download_dir', 'complete_dir'):
             path = config['misc'].get(name)
             if not path:
-                logger.error('failed to get sabnzbd %s' % name)
+                logger.error('failed to get sabnzbd %s', name)
                 continue
             path = str(os.path.join(base_path, path))
             if not os.path.exists(path):
-                logger.error('sabnzbd %s path %s does not exist' % (name, path))
+                logger.error('sabnzbd %s path %s does not exist', name, path)
                 continue
 
             for file in glob(path + '/*'):
                 if remove_file(file):
-                    logger.info('removed obsolete sabnzbd path %s' % file)
+                    logger.info('removed obsolete sabnzbd path %s', file)
 
     except SabnzbdError, e:
-        logger.error('nzb client error: %s' % str(e))
+        logger.error('nzb client error: %s', str(e))
 
 @loop(hours=6)
 @timeout(minutes=30)

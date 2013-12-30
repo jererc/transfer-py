@@ -44,10 +44,10 @@ class HttpTransfer(object):
             if not res:
                 return
             if not res['filename']:
-                logger.error('failed to get filename from %s' % url)
+                logger.error('failed to get filename from %s', url)
                 return
             if not res['size']:
-                logger.error('failed to get size from %s' % url)
+                logger.error('failed to get size from %s', url)
             info.append(res)
         return info
 
@@ -74,7 +74,7 @@ class HttpTransfer(object):
             try:
                 curl.perform()
             except pycurl.error:
-                logger.debug('aborted transfer from %s' % src)
+                logger.debug('aborted transfer from %s', src)
                 sys.exit(1)     # to avoid zombies
             finally:
                 curl.close()
@@ -106,7 +106,7 @@ class HttpTransfer(object):
                 if not dst_file:
                     return
                 dst_files.append(dst_file)
-                logger.info('moved finished transfer "%s" to %s' % (data['filename'], dst))
+                logger.info('moved finished transfer "%s" to %s', data['filename'], dst)
 
         return dst_files
 
@@ -133,7 +133,7 @@ def get_url_info(url):
     try:
         remote = urlopen(url)
     except Exception, e:
-        logger.error('failed to open %s: %s' % (url, str(e)))
+        logger.error('failed to open %s: %s', url, str(e))
         return
     if remote:
         url = remote.geturl()

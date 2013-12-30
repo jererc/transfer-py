@@ -158,7 +158,7 @@ class Transmission(object):
                 continue
             elif os.path.isfile(file) and file not in files_queued:
                 if media.remove_file(file):
-                    logger.info('removed file %s: not queued' % file.encode('utf-8'))
+                    logger.info('removed file %s: not queued', file.encode('utf-8'))
 
         # Remove empty directories not queued
         for path in media.iter_files(self.download_dir,
@@ -166,7 +166,7 @@ class Transmission(object):
             if not os.listdir(path) \
                     and not self._is_dir_queued(path, files_queued):
                 if media.remove_file(path):
-                    logger.info('removed empty directory %s: not queued' % path.encode('utf-8'))
+                    logger.info('removed empty directory %s: not queued', path.encode('utf-8'))
 
 
 def get_hash(url):

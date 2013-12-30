@@ -125,8 +125,8 @@ class SftpTransfer(object):
                 return
 
         if abs(dst_stat.st_mtime - src_stat.st_mtime) > MTIME_TOLERANCE:
-            logger.debug('%s modified time mismatch (src: %s, dst: %s)' % (file,
-                    datetime.utcfromtimestamp(src_stat.st_mtime), datetime.utcfromtimestamp(dst_stat.st_mtime)))
+            logger.debug('%s modified time mismatch (src: %s, dst: %s)', file,
+                    datetime.utcfromtimestamp(src_stat.st_mtime), datetime.utcfromtimestamp(dst_stat.st_mtime))
             return
         if dst_stat.st_size != src_stat.st_size:
             return
@@ -151,7 +151,7 @@ class SftpTransfer(object):
                 try:
                     callables[type](file)
                 except Exception, e:
-                    logger.debug('failed to remove %s: %s' % (file, str(e)))
+                    logger.debug('failed to remove %s: %s', file, str(e))
 
     def _get_filters(self, filters):
         if not filters:

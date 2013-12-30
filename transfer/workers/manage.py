@@ -35,7 +35,7 @@ def manage_torrent(hash, dst):
             if torrent.progress == 100 and not client.move_files(torrent, invalid_dir):
                 return
             if client.remove_torrent(hash=hash, delete_data=True):
-                logger.info('removed invalid torrent "%s" (%s%% done)' % (torrent.name, int(torrent.progress)))
+                logger.info('removed invalid torrent "%s" (%s%% done)', torrent.name, int(torrent.progress))
             Transfer.update({'info.hash': hash, 'finished': None},
                     {'$set': {'finished': datetime.utcnow()}}, safe=True)
             return
@@ -45,7 +45,7 @@ def manage_torrent(hash, dst):
             if not client.move_files(torrent, destination):
                 return
             if client.remove_torrent(hash=hash):
-                logger.info('moved finished torrent "%s" to %s' % (torrent.name, dst))
+                logger.info('moved finished torrent "%s" to %s', torrent.name, dst)
             Transfer.update({'info.hash': hash, 'finished': None},
                     {'$set': {'finished': datetime.utcnow()}}, safe=True)
             return
@@ -58,7 +58,7 @@ def manage_torrent(hash, dst):
             date = torrent.date_active or torrent.date_added
             if date < now - timedelta(hours=inactive_delta) \
                     and client.remove_torrent(hash=hash, delete_data=True):
-                logger.debug('removed inactive torrent "%s": no activity since %s' % (torrent.name, date))
+                logger.debug('removed inactive torrent "%s": no activity since %s', torrent.name, date)
                 return
 
         added_delta = torrent_settings['added_delta']
@@ -66,10 +66,10 @@ def manage_torrent(hash, dst):
             date = torrent.date_added
             if date < now - timedelta(hours=added_delta) \
                     and client.remove_torrent(hash=hash, delete_data=True):
-                logger.debug('removed obsolete torrent "%s": added %s' % (torrent.name, date))
+                logger.debug('removed obsolete torrent "%s": added %s', torrent.name, date)
 
     except TransmissionError, e:
-        logger.error('torrent client error: %s' % str(e))
+        logger.error('torrent client error: %s', str(e))
 
 def manage_torrents():
     client = get_torrent_client()
@@ -88,7 +88,7 @@ def manage_torrents():
             continue
         if not torrent:
             transfer['finished'] = datetime.utcnow()
-            logger.debug('torrent %s is not queued' % hash)
+            logger.debug('torrent %s is not queued', hash)
         else:
             transfer['info'] = torrent
             transfer['transferred'] = torrent.transferred
@@ -108,7 +108,7 @@ def manage_torrents():
                     info={'hash': torrent.hash})
         elif transfer['finished']:
             client.remove_torrent(hash=torrent.hash, delete_data=True)
-            logger.debug('removed finished torrent "%s" (%s)' % (torrent.name, torrent.hash))
+            logger.debug('removed finished torrent "%s" (%s)', torrent.name, torrent.hash)
         else:
             target = '%s.workers.manage.manage_torrent' % settings.PACKAGE_NAME
             get_factory().add(target=target,
@@ -129,17 +129,17 @@ def manage_nzb(nzb_id, dst):
 
         if not os.path.exists(nzb['storage']):
             client.remove_nzb(nzb['nzo_id'], history=True, delete_files=True)
-            logger.error('failed to find finished nzb directory "%s" (%s)' % (nzb['storage'], repr(nzb)))
+            logger.error('failed to find finished nzb directory "%s" (%s)', nzb['storage'], repr(nzb))
             media.remove_file(nzb['path'])
-            logger.error('removed nzb path "%s" (%s)' % (nzb['path'], repr(nzb)))
+            logger.error('removed nzb path "%s" (%s)', nzb['path'], repr(nzb))
             return
 
         if media.move_file(nzb['storage'], dst):
             client.remove_nzb(nzb['nzo_id'], history=True)
-            logger.info('moved finished nzb %s to %s' % (nzb['storage'], dst))
+            logger.info('moved finished nzb %s to %s', nzb['storage'], dst)
 
     except SabnzbdError, e:
-        logger.error('nzb client error: %s' % str(e))
+        logger.error('nzb client error: %s', str(e))
 
 def get_nzb_transfer(id):
     return Transfer.find_one({'info.nzo_id': id},
@@ -190,7 +190,7 @@ def manage_nzbs():
                     info={'nzo_id': nzb['nzo_id']})
         elif transfer['finished']:
             client.remove_nzb(nzb['nzo_id'])
-            logger.info('removed finished nzb "%s" (%s)' % (nzb['filename'], nzb['nzo_id']))
+            logger.info('removed finished nzb "%s" (%s)', nzb['filename'], nzb['nzo_id'])
 
     # Manage finished nzbs
     for nzb in client.list_nzbs(history=True):
@@ -214,10 +214,10 @@ def run():
         try:
             manage_torrents()
         except TransmissionError, e:
-            logger.error('torrent client error: %s' % str(e))
+            logger.error('torrent client error: %s', str(e))
 
     if Settings.get_settings('sabnzbd').get('active', True):
         try:
             manage_nzbs()
         except SabnzbdError, e:
-            logger.error('nzb client error: %s' % str(e))
+            logger.error('nzb client error: %s', str(e))

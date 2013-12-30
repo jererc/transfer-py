@@ -103,7 +103,7 @@ class FtpTransfer(object):
                 try:
                     callables[type](file)
                 except Exception, e:
-                    logger.debug('failed to remove %s: %s' % (file, str(e)))
+                    logger.debug('failed to remove %s: %s', file, str(e))
 
     def _get_filters(self, filters):
         if not filters:
