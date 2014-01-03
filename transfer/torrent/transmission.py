@@ -90,6 +90,8 @@ class Transmission(object):
 
     def remove_torrent(self, id=None, hash=None, delete_data=False):
         res = self.get_torrent(id=id, hash=hash)
+        if not res:
+            return
         if delete_data and not res.files:    # remove data requests fail for magnets without metadata
             delete_data = False
 
