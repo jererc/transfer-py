@@ -206,7 +206,7 @@ def manage_nzbs():
                 kwargs={'nzb_id': nzb['nzo_id'], 'dst': dst},
                 timeout=TIMEOUT_MANAGE)
 
-@loop(10)
+@loop(30)
 @timeout(minutes=30)
 @timer()
 def run():

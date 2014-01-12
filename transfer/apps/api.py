@@ -59,7 +59,7 @@ def remove_transfer():
     data = request.json
     if not data.get('id'):
         return jsonify(error='missing id')
-    Transfer.cancel(ObjectId(data['id']))
+    Transfer.remove({'_id': ObjectId(data['id'])}, safe=True)
     return jsonify(result=True)
 
 @app.route('/settings/list', methods=['GET', 'OPTIONS'])

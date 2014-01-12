@@ -12,7 +12,7 @@ from transfer.torrent import get_torrent_client, TransmissionError
 from transfer.nzb import get_nzb_client, SabnzbdError
 
 
-DELTA_OBSOLETE = timedelta(days=180)
+DELTA_OBSOLETE = timedelta(days=30)
 
 logger = logging.getLogger(__name__)
 
