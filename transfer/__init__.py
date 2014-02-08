@@ -81,6 +81,14 @@ class Transfer(Model):
         doc['info']['name'] = ', '.join(src) if isinstance(src, (list, tuple)) else src
         return cls.insert(doc, safe=True)
 
+    @classmethod
+    def cancel(cls, id):
+        settings_ = Settings.get_settings('general')
+        cls.update({'_id': id}, {'$set': {
+                'finished': datetime.utcnow(),
+                'tries': settings_['max_tries'],
+                }}, safe=True)
+
 
 class Settings(Model):
     COL = 'settings'
