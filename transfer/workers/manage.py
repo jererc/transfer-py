@@ -106,6 +106,7 @@ def manage_torrents():
             Transfer.add(torrent.magnet_url, default_dir,
                     type='torrent', added=now, started=now,
                     info={'hash': torrent.hash})
+            logger.info('started torrent transfer %s to %s', torrent.magnet_url, default_dir)
         elif transfer['finished']:
             client.remove_torrent(hash=torrent.hash, delete_data=True)
             logger.debug('removed finished torrent "%s" (%s)', torrent.name, torrent.hash)
