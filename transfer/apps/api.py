@@ -2,8 +2,6 @@ import logging
 
 from flask import request, jsonify
 
-from bson.objectid import ObjectId
-
 from systools.system.webapp import crossdomain, serialize
 
 from transfer import Transfer, Settings
@@ -59,7 +57,7 @@ def remove_transfer():
     data = request.json
     if not data.get('id'):
         return jsonify(error='missing id')
-    Transfer.cancel(ObjectId(data['id']))
+    Transfer.cancel(data['id'])
     return jsonify(result=True)
 
 @app.route('/settings/list', methods=['GET', 'OPTIONS'])

@@ -1,6 +1,8 @@
 from datetime import datetime
 import logging
 
+from bson.objectid import ObjectId
+
 from factory import Factory
 
 from transfer import settings
@@ -83,8 +85,8 @@ class Transfer(Model):
 
     @classmethod
     def cancel(cls, id):
-        cls.update({'_id': id}, {'$set': {'finished': datetime.utcnow()}},
-                safe=True)
+        cls.update({'_id': ObjectId(id)},
+                {'$set': {'finished': datetime.utcnow()}}, safe=True)
 
 
 class Settings(Model):
