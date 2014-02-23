@@ -31,14 +31,17 @@ def run():
     settings_ = Settings.get_settings('general')
     retry_delta = timedelta(seconds=settings_['retry_delta'])
 
-    for transfer in Transfer.find({'$or': [
-            {'added': None},
-            {
-            'added': {'$lt': datetime.utcnow() - retry_delta},
-            'started': None,
-            'tries': {'$lt': settings_['max_tries']},
-            },
-            ]}):
+    for transfer in Transfer.find({
+            'finished': None,
+            '$or': [
+                {'added': None},
+                {
+                'added': {'$lt': datetime.utcnow() - retry_delta},
+                'started': None,
+                'tries': {'$lt': settings_['max_tries']},
+                },
+                ],
+            }):
         limit = settings.WORKERS_LIMITS.get(transfer['type'])
         if limit and running.get(transfer['type'], 0) >= limit:
             continue
@@ -56,7 +59,6 @@ def run():
                 '$set': {
                     'added': datetime.utcnow(),
                     'started': datetime.utcnow(),
-                    'finished': None,
                     },
                 '$inc': {'tries': 1},
                 }, safe=True)

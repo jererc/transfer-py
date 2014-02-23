@@ -83,11 +83,8 @@ class Transfer(Model):
 
     @classmethod
     def cancel(cls, id):
-        settings_ = Settings.get_settings('general')
-        cls.update({'_id': id}, {'$set': {
-                'finished': datetime.utcnow(),
-                'tries': settings_['max_tries'],
-                }}, safe=True)
+        cls.update({'_id': id}, {'$set': {'finished': datetime.utcnow()}},
+                safe=True)
 
 
 class Settings(Model):
@@ -103,7 +100,7 @@ class Settings(Model):
     def set_setting(cls, section, key, value):
         cls.update({'section': section},
                 {'$set': {'section': section, 'settings.%s' % key: value}},
-                upsert=True)
+                upsert=True, safe=True)
 
     @classmethod
     def set_settings(cls, section, settings, overwrite=False):
@@ -112,7 +109,7 @@ class Settings(Model):
             'settings': settings,
             }
         cls.update({'section': section},
-                doc if overwrite else {'$set': doc}, upsert=True)
+                doc if overwrite else {'$set': doc}, upsert=True, safe=True)
 
 
 def get_factory():

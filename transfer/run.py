@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+from datetime import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -17,7 +18,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def clean_aborted():
-    Transfer.remove({'is_mount': True}, safe=True)
+    Transfer.update({'is_mount': True},
+            {'$set': {'finished': datetime.utcnow()}}, multi=True, safe=True)
     Transfer.update({'finished': None, 'queued': None},
             {'$set': {'started': None}}, multi=True, safe=True)
 
