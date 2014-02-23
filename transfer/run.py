@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def clean_aborted():
-    Transfer.update({'is_mount': True},
+    Transfer.update({'is_mount': True, 'finished': None},
             {'$set': {'finished': datetime.utcnow()}}, multi=True, safe=True)
     Transfer.update({'finished': None, 'queued': None},
             {'$set': {'started': None}}, multi=True, safe=True)
