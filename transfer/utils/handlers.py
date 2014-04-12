@@ -5,9 +5,6 @@ import time
 from urlparse import urlparse, parse_qs
 import logging
 
-from mediacore.web.search.plugins.binsearch import get_nzb, BinsearchError
-from mediacore.web.search.plugins.filestube import get_download_urls, FilestubeError
-
 from filetools.title import clean
 from filetools.media import mkdtemp
 
@@ -77,6 +74,8 @@ class Http(HttpTransfer):
 class Filestube(Http):
 
     def process_transfer(self, id):
+        from mediacore.web.search.plugins.filestube import get_download_urls, FilestubeError
+
         self.transfer = Transfer.find_one({'_id': id})
         if not self.transfer:
             return
@@ -192,6 +191,8 @@ class Ftp(FtpTransfer):
 class Binsearch(object):
 
     def process_transfer(self, id):
+        from mediacore.web.search.plugins.binsearch import get_nzb, BinsearchError
+
         transfer = Transfer.find_one({'_id': id, 'queued': None})
         if not transfer:
             return
@@ -245,6 +246,43 @@ class Torrent(object):
             info = get_torrent_client().add_torrent(transfer['src'])
             Transfer.update({'_id': transfer['_id']},
                     {'$set': {
+                        'queued': datetime.utcnow(),
+                        'info': info,
+                    }}, safe=True)
+        except TorrentExists, e:
+            Transfer.update({'_id': transfer['_id']},
+                    {'$set': {'finished': datetime.utcnow()}},
+                    safe=True)
+            logger.debug('failed to start torrent: %s', str(e))
+        except (TransmissionError, TorrentError), e:
+            Transfer.update({'_id': transfer['_id']}, {'$set': {
+                    'started': None,
+                    'tries': 0,
+                    }}, safe=True)
+            logger.error('failed to start torrent: %s', str(e))
+
+
+class Rutracker(object):
+
+    def process_transfer(self, id):
+        import media
+        from mediacore.web.search.plugins.rutracker import download_torrent, DownloadError
+
+        transfer = Transfer.find_one({'_id': id, 'queued': None})
+        if not transfer:
+            return
+
+        try:
+            data = download_torrent(transfer['src'])
+        except DownloadError, e:
+            logger.error('failed to start torrent: %s', str(e))
+            return
+
+        try:
+            info = get_torrent_client().add_torrent(data)
+            Transfer.update({'_id': transfer['_id']},
+                    {'$set': {
+                        'type': 'torrent',
                         'queued': datetime.utcnow(),
                         'info': info,
                     }}, safe=True)

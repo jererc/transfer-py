@@ -12,7 +12,6 @@ from filetools.title import clean
 from filetools.download import check_download_file
 
 
-RE_HASH = re.compile(r'\bbtih:(.*?)\W', re.I)
 RE_DUPLICATE = re.compile('duplicate torrent', re.I)
 
 logger = logging.getLogger(__name__)
@@ -34,21 +33,21 @@ class Transmission(object):
         except Exception, e:
             raise TransmissionError('failed to connect to transmission rpc server %s:%s: %s' % (host, port, str(e)))
 
-    def add_torrent(self, url, delete_torrent=True):
+    def add_torrent(self, data, delete_torrent=True):
         try:
-            self.client.add_torrent(url)
+            res = self.client.add_torrent(data)
         except Exception, e:
             if RE_DUPLICATE.search(str(e)):
-                raise TorrentExists('url %s is already queued' % url)
-            raise TorrentError('failed to add url %s: %s' % (url, str(e)))
+                raise TorrentExists('%s is already queued' % data[:1000])
+            raise TorrentError('failed to add torrent %s: %s' % (data[:1000], str(e)))
 
-        if os.path.isfile(url) and delete_torrent:
-            media.remove_file(url)
+        if os.path.isfile(data) and delete_torrent:
+            media.remove_file(data)
 
-        torrent = self.get_torrent(hash=get_hash(url))
+        torrent = self.get_torrent(hash=res.hashString.lower())
         if torrent:
             return torrent
-        raise TorrentError('failed to add torrent %s' % url)
+        raise TorrentError('failed to add torrent %s' % data[:1000])
 
     def _get_torrent(self, torrent):
         return dotdict({
@@ -169,9 +168,3 @@ class Transmission(object):
                     and not self._is_dir_queued(path, files_queued):
                 if media.remove_file(path):
                     logger.info('removed empty directory %s: not queued', path.encode('utf-8'))
-
-
-def get_hash(url):
-    res = RE_HASH.findall(url)
-    if res:
-        return res[0].lower()

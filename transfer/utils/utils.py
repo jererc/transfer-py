@@ -5,6 +5,11 @@ class UriError(Exception): pass
 
 
 def get_transfer_type(src, dst):
+    srcs = src if isinstance(src, (list, tuple)) else [src]
+    for src_ in srcs:
+        if 'rutracker' in urlparse(src_.lower()).netloc.split('.'):
+            return 'rutracker'
+
     schemes = []
     for uris in (src, dst):
         if not isinstance(uris, (list, tuple)):
