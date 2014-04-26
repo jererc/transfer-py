@@ -22,9 +22,8 @@ logger = logging.getLogger(__name__)
 # Torrent
 #
 @timer(30)
-def manage_torrent(hash, dst):
+def manage_torrent(client, hash, dst):
     try:
-        client = get_torrent_client()
         torrent = client.get_torrent(hash=hash)
         if not torrent:
             return
@@ -111,19 +110,15 @@ def manage_torrents():
             client.remove_torrent(hash=torrent.hash, delete_data=True)
             logger.debug('removed finished torrent "%s" (%s)', torrent.name, torrent.hash)
         else:
-            target = '%s.workers.manage.manage_torrent' % settings.PACKAGE_NAME
-            get_factory().add(target=target,
-                    kwargs={'hash': torrent.hash, 'dst': transfer['dst']},
-                    timeout=TIMEOUT_MANAGE)
+            manage_torrent(client, hash=torrent.hash, dst=transfer['dst'])
 
 
 #
 # NZB
 #
 @timer(30)
-def manage_nzb(nzb_id, dst):
+def manage_nzb(client, nzb_id, dst):
     try:
-        client = get_nzb_client()
         nzb = client.get_nzb(nzb_id, history=True)
         if not nzb or not nzb['storage']:
             return
@@ -202,10 +197,7 @@ def manage_nzbs():
             dst = str(paths['invalid'])
         else:
             continue
-        target = '%s.workers.manage.manage_nzb' % settings.PACKAGE_NAME
-        get_factory().add(target=target,
-                kwargs={'nzb_id': nzb['nzo_id'], 'dst': dst},
-                timeout=TIMEOUT_MANAGE)
+        manage_nzb(client, nzb_id=nzb['nzo_id'], dst=dst)
 
 @loop(30)
 @timeout(minutes=30)
